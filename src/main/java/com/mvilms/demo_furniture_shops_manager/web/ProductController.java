@@ -1,5 +1,6 @@
 package com.mvilms.demo_furniture_shops_manager.web;
 
+import com.mvilms.demo_furniture_shops_manager.exceptions.ProductNotFoundException;
 import com.mvilms.demo_furniture_shops_manager.model.Product;
 import com.mvilms.demo_furniture_shops_manager.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,13 +31,13 @@ public class ProductController {
     }
 
     @GetMapping("/products/{id}")
-    Resource<Product> getProductById(@PathVariable Long id) {
+    Resource<Product> getById(@PathVariable Long id) {
         Product product = productService.getById(id);
         return productResourceAssembler.toResource(product);
     }
 
     @GetMapping("/products")
-    Resources<Resource<Product>> getAllProducts() {
+    Resources<Resource<Product>> getAll() {
         List<Product> products = productService.getAll();
 
         List<Resource<Product>> productResources = products.stream()
@@ -44,30 +45,30 @@ public class ProductController {
                 .collect(Collectors.toList());
 
         return new Resources<>(productResources,
-                linkTo(methodOn(ProductController.class).getAllProducts()).withSelfRel());
+                linkTo(methodOn(ProductController.class).getAll()).withSelfRel());
     }
 
     @PostMapping("/products")
-    ResponseEntity<?> newProduct(@RequestBody Product newProduct) throws URISyntaxException {
+    ResponseEntity<?> addNew(@RequestBody Product newProduct) throws URISyntaxException {
         Resource<Product> resource = productResourceAssembler
                 .toResource(productService.save(newProduct));
         return ResponseEntity
-            .created(new URI(resource.getId().expand().getHref()))
-            .body(resource);
+            .created(new URI(resource.getId().expand().getHref())).body(resource);
     }
 
     @PutMapping("/products/{id}")
-    ResponseEntity<?> updateProduct(@RequestBody Product newProduct, @PathVariable Long id)
+    ResponseEntity<?> update(@RequestBody Product newProduct, @PathVariable Long id)
             throws URISyntaxException {
-
-        Product oldProduct = productService.getById(id);
         Product savedProduct;
-        if (oldProduct == null){
-            savedProduct = productService.save(newProduct);
-        } else {    // what to do if there will be many fields(????)
+
+        try {
+            Product oldProduct = productService.getById(id);
+
             oldProduct.setName(newProduct.getName());
             oldProduct.setDescription(newProduct.getDescription());
             oldProduct.setPrice(newProduct.getPrice());
+            savedProduct = productService.save(oldProduct);
+        } catch (ProductNotFoundException exception){ // haven't found existing product record
             savedProduct = productService.save(newProduct);
         }
 
@@ -78,9 +79,10 @@ public class ProductController {
                 .body(resourceProduct);
     }
 
-    @DeleteMapping("/product/{id}")
-    void deleteEmployee(@PathVariable Long id) {
+    @DeleteMapping("/products/{id}")
+    ResponseEntity<?> delete(@PathVariable Long id) {
         productService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
