@@ -41,17 +41,17 @@ public class ProductController {
         List<Product> products = productService.getAll();
 
         List<Resource<Product>> productResources = products.stream()
-                .map(productResourceAssembler::toResource)
-                .collect(Collectors.toList());
+            .map(productResourceAssembler::toResource)
+            .collect(Collectors.toList());
 
         return new Resources<>(productResources,
-                linkTo(methodOn(ProductController.class).getAll()).withSelfRel());
+            linkTo(methodOn(ProductController.class).getAll()).withSelfRel());
     }
 
     @PostMapping("/products")
     ResponseEntity<?> addNew(@RequestBody Product newProduct) throws URISyntaxException {
         Resource<Product> resource = productResourceAssembler
-                .toResource(productService.save(newProduct));
+            .toResource(productService.save(newProduct));
         return ResponseEntity
             .created(new URI(resource.getId().expand().getHref())).body(resource);
     }

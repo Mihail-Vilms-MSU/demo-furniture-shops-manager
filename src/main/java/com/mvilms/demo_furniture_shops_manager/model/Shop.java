@@ -14,7 +14,9 @@ public class Shop {
     private Long id;
     private String name;
     private String city;
+    private String state;
     private String address;
+    private String phone;
 
     private Date createdAt;
     private Date updatedAt;

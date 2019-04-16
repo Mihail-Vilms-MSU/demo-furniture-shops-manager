@@ -15,6 +15,7 @@ public class Product {
     private Long id;
     private String name;
     private BigDecimal price;
+    private BigDecimal type;
     private String description;
     private boolean isActive;
     private Date createdAt;

@@ -15,7 +15,10 @@ public class ShopToProduct {
     private Long productId;
     private Long amount;
 
+    public ShopToProduct(){}
+
     public ShopToProduct(Long shopId, Long productId, Long amount){
+        this();
         this.shopId = shopId;
         this.productId = productId;
         this.amount = amount;

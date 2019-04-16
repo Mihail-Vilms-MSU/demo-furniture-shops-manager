@@ -5,28 +5,33 @@ import com.mvilms.demo_furniture_shops_manager.data.ShopToProductRepository;
 import com.mvilms.demo_furniture_shops_manager.exceptions.ShopNotFoundException;
 import com.mvilms.demo_furniture_shops_manager.model.Shop;
 import com.mvilms.demo_furniture_shops_manager.model.ShopToProduct;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Service
+@Slf4j
 public class ShopService {
     @Autowired
     ShopRepository shopRepository;
     @Autowired
     ShopToProductRepository shopToProductRepository;
 
-    public Shop getShopById(Long id) throws ShopNotFoundException {
+    public Shop getById(Long id) throws ShopNotFoundException {
         return shopRepository.findById(id)
                 .orElseThrow(() -> new ShopNotFoundException(id));
     }
 
-    public List<Shop> getAllShops(){
+    public List<Shop> getAll(){
         return shopRepository.findAll();
     }
 
-    public Shop addShop(Shop newShop){
+    public Shop add(Shop newShop){
         return shopRepository.save(newShop);
     }
 
@@ -34,22 +39,29 @@ public class ShopService {
      * Returns map with key corresponds to product ID
      * and value corresponds to available amount of this product within shop
      *
-     * @param {Long} id Shop ID we want to know available amount of products for
-     * @return {Map} Product id: amount of units available
+     * @param shopId Shop ID we want to know available amount of products for
+     * @return {Product id: amount of units available}
      */
-    public Map<Long, Long> getListOfProducts(Long shopId){
+    public Map<Long, Long> getAmountOfProducts(Long shopId){
         return shopToProductRepository.findAllProductsForShop(shopId)
                 .stream()
                 .collect(Collectors.toMap(ShopToProduct::getProductId, ShopToProduct::getAmount));
     }
 
-    /*
-    public Map<Long, Long> getListOfProducts(Long id, List<Long> productIdsList){
-        return productIdsList.stream()
-                .collect();
-
+    /**
+     * Finds out how many items of particular product there are at shop
+     *
+     * @param shopId
+     * @param productId
+     * @return Available amount of product in shop
+     */
+    public Long getAmountOfProduct(Long shopId, Long productId){
+        ShopToProduct record = shopToProductRepository.getProductAmount(shopId, productId);
+        if (record != null) return record.getAmount();
+        return (long)0;
     }
-    */
+
+
     /**
      * Adding different amount of product units of different types to shop storage
      *
