@@ -9,6 +9,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class DemoFurnitureShopsManagerApplicationTests {
 
+    /**
+     * Sanity check test that will fail if the application context cannot start
+     */
     @Test
     public void contextLoads() {
     }
