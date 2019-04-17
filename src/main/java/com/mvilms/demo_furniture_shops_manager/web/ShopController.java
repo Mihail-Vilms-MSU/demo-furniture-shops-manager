@@ -1,13 +1,13 @@
 package com.mvilms.demo_furniture_shops_manager.web;
 
 import com.mvilms.demo_furniture_shops_manager.model.Shop;
+import com.mvilms.demo_furniture_shops_manager.model.ShopToProduct;
 import com.mvilms.demo_furniture_shops_manager.service.ShopService;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -44,16 +44,20 @@ public class ShopController {
     @GetMapping("/shops/{id}")
     Resource<Shop> getById(@PathVariable Long id) {
         Shop shop = shopService.getById(id);
-
         return shopResourceAssembler.toResource(shop);
     }
 
     @GetMapping("/shops/{shop_id}/products")
-    Resource<Map<Long, Long>> getProductsInShop(@PathVariable Long shop_id) {
-        Shop shop = shopService.getById(shop_id);
-        Map<Long, Long> amountOfProducts = shopService.getAmountOfProducts(shop_id);
+    Resources<Resource<ShopToProduct>> getProductsInShop(@PathVariable Long shop_id) {
+        List<Resource<ShopToProduct>> resourcesList = shopService
+            .getAmountOfProducts(shop_id)
+            .stream()
+            .map(amountOfProduct -> {
+                return new Resource<>(amountOfProduct);
+            })
+            .collect(Collectors.toList());
 
-        return new Resource<Map<Long, Long>>(amountOfProducts);
+        return new Resources<>(resourcesList);
     }
 
     @GetMapping("/shops/{shop_id}/products/{product_id}")
@@ -61,6 +65,26 @@ public class ShopController {
         return shopService.getAmountOfProduct(shop_id, product_id);
     }
 
+    @PutMapping("/shops/{shopId}/products/{productId}")
+    Long setAmountOfProduct(@RequestBody Long diff, @PathVariable Long shopId, @PathVariable Long productId) {
+        return shopService.changeAmountOfProduct(shopId, productId, diff);
+    }
+    /*
+    @PutMapping("/shops/{shopId}/products")
+    Long setAmountOfProducts(@RequestBody JSONArray jsonArray, @PathVariable Long shopId) {
 
 
+
+        jsonArray.toList().stream().forEach(
+                log.info("");
+        );
+
+        inputJson.keySet().forEach(key->{
+            Long productId = (long)key.;
+            inputMap.put(productId, inputJson.getLong((long)productId));
+        });
+
+        // return shopService.changeAmountOfProducts(shopId, inputMap);
+    }
+    */
 }

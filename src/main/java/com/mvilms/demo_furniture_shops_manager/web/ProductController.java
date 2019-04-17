@@ -64,9 +64,10 @@ public class ProductController {
         try {
             Product oldProduct = productService.getById(id);
 
-            oldProduct.setName(newProduct.getName());
-            oldProduct.setDescription(newProduct.getDescription());
-            oldProduct.setPrice(newProduct.getPrice());
+            if (newProduct.getName() != null) oldProduct.setName(newProduct.getName());
+            if (newProduct.getDescription() != null) oldProduct.setDescription(newProduct.getDescription());
+            if (newProduct.getPrice() != null) oldProduct.setPrice(newProduct.getPrice());
+
             savedProduct = productService.save(oldProduct);
         } catch (ProductNotFoundException exception){ // haven't found existing product record
             savedProduct = productService.save(newProduct);

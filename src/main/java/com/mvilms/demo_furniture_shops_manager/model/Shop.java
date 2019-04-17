@@ -1,5 +1,6 @@
 package com.mvilms.demo_furniture_shops_manager.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
