@@ -25,9 +25,10 @@ public class ProductController {
     @Autowired
     ProductResourceAssembler assembler;
 
+    // #TODO#
+    // Implement "NOT_FOUND" Exception
     @GetMapping("/products/{id}")
     ProductResource getById(@PathVariable Long id) {
-        Product product = productService.getById(id);
         return assembler.toResource(productService.getById(id));
     }
 
@@ -41,7 +42,7 @@ public class ProductController {
                 new Resources<ProductResource>(productResourcesList);
 
         productResources
-                .add(linkTo(methodOn(ProductController.class).getAll()).withRel("products"));
+                .add(linkTo(methodOn(ProductController.class).getAll()).withSelfRel());
 
         return productResources;
     }
@@ -74,7 +75,6 @@ public class ProductController {
 
         return assembler.toResource(savedProduct);
     }
-
 
     @DeleteMapping("/products/{id}")
     ResponseEntity<?> delete(@PathVariable Long id) {

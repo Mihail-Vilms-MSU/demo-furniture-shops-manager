@@ -15,7 +15,7 @@ public class Product {
     private Long id;
     private String name;
     private BigDecimal price;
-    private BigDecimal type;
+    private String type;
     private String description;
     private boolean isActive;
     private Date createdAt;
@@ -27,14 +27,15 @@ public class Product {
         this.updatedAt = new Date();
     }
 
-    public Product(String name, BigDecimal price){
+    public Product(String name, BigDecimal price, String type){
         this();
         this.name = name;
         this.price = price;
+        this.type = type;
     }
 
-    public Product(String name, BigDecimal price, String description){
-        this(name, price);
+    public Product(String name, BigDecimal price, String type, String description){
+        this(name, price, type);
         this.description = description;
     }
 }

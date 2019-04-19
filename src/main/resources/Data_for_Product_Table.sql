@@ -60,6 +60,10 @@ values
 
 (1006, 'Bedroom & More', 'Portland', 'OR', '1329 Magnolia Ave', '(415) 666-3344', null, null);
 
+(1007, 'Monument', 'San Francisco', 'CA', '2900 88th St', '(415) 711-3344', null, null);
+
+(1008, 'Modern Details', 'Los Angeles', 'CA', '1500 55th St', '(415) 321-3564', null, null);
+
  /* shop_to_product table demo data */
 insert into shop_to_product (shop_id, product_id, amount)
 values
