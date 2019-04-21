@@ -28,7 +28,7 @@ public class ProductService {
         return productRepository.save(newProduct);
     }
 
-    public void delete(Long id) throws ProductNotFoundException{
+    public void delete(Long id) {
         productRepository.deleteById(id);
     }
 }

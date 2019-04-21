@@ -2,17 +2,17 @@ package com.mvilms.demo_furniture_shops_manager.web;
 
 import com.mvilms.demo_furniture_shops_manager.exceptions.ProductNotFoundException;
 import com.mvilms.demo_furniture_shops_manager.model.Product;
+import com.mvilms.demo_furniture_shops_manager.resources.ProductResource;
+import com.mvilms.demo_furniture_shops_manager.resources.ProductResourceAssembler;
 import com.mvilms.demo_furniture_shops_manager.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.hateoas.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -20,64 +20,60 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RestController
 @Slf4j
 public class ProductController {
-    private final ProductService productService;
-    private final ProductResourceAssembler productResourceAssembler;
+    @Autowired
+    ProductService productService;
+    @Autowired
+    ProductResourceAssembler assembler;
 
-    ProductController(ProductService productService,
-                       ProductResourceAssembler productResourceAssembler) {
-
-        this.productService = productService;
-        this.productResourceAssembler = productResourceAssembler;
-    }
-
+    // #TODO#
+    // Implement "NOT_FOUND" Exception
     @GetMapping("/products/{id}")
-    Resource<Product> getById(@PathVariable Long id) {
-        Product product = productService.getById(id);
-        return productResourceAssembler.toResource(product);
+    ProductResource getById(@PathVariable Long id) {
+        return assembler.toResource(productService.getById(id));
     }
 
     @GetMapping("/products")
-    Resources<Resource<Product>> getAll() {
-        List<Product> products = productService.getAll();
+    Resources<ProductResource> getAll() {
 
-        List<Resource<Product>> productResources = products.stream()
-            .map(productResourceAssembler::toResource)
-            .collect(Collectors.toList());
+        List<ProductResource> productResourcesList =
+                assembler.toResources(productService.getAll());
 
-        return new Resources<>(productResources,
-            linkTo(methodOn(ProductController.class).getAll()).withSelfRel());
+        Resources<ProductResource> productResources =
+                new Resources<ProductResource>(productResourcesList);
+
+        productResources
+                .add(linkTo(methodOn(ProductController.class).getAll()).withSelfRel());
+
+        return productResources;
     }
 
     @PostMapping("/products")
-    ResponseEntity<?> addNew(@RequestBody Product newProduct) throws URISyntaxException {
-        Resource<Product> resource = productResourceAssembler
-            .toResource(productService.save(newProduct));
-        return ResponseEntity
-            .created(new URI(resource.getId().expand().getHref())).body(resource);
+    ProductResource addNew(@RequestBody Product newProduct) {
+        return assembler.toResource(productService.save(newProduct));
     }
 
     @PutMapping("/products/{id}")
-    ResponseEntity<?> update(@RequestBody Product newProduct, @PathVariable Long id)
-            throws URISyntaxException {
+    ProductResource update(@RequestBody Product newProduct, @PathVariable Long id) throws URISyntaxException {
         Product savedProduct;
 
         try {
             Product oldProduct = productService.getById(id);
 
-            if (newProduct.getName() != null) oldProduct.setName(newProduct.getName());
-            if (newProduct.getDescription() != null) oldProduct.setDescription(newProduct.getDescription());
-            if (newProduct.getPrice() != null) oldProduct.setPrice(newProduct.getPrice());
+            if (newProduct.getName() != null)
+                oldProduct.setName(newProduct.getName());
+            if (newProduct.getDescription() != null)
+                oldProduct.setDescription(newProduct.getDescription());
+            if (newProduct.getPrice() != null)
+                oldProduct.setPrice(newProduct.getPrice());
+            if (newProduct.getType() != null)
+                oldProduct.setType(newProduct.getType());
 
             savedProduct = productService.save(oldProduct);
         } catch (ProductNotFoundException exception){ // haven't found existing product record
             savedProduct = productService.save(newProduct);
         }
 
-        Resource<Product> resourceProduct = productResourceAssembler.toResource(savedProduct);
-
-        return ResponseEntity
-                .created(new URI(resourceProduct.getId().expand().getHref()))
-                .body(resourceProduct);
+        return assembler.toResource(savedProduct);
     }
 
     @DeleteMapping("/products/{id}")
@@ -85,5 +81,4 @@ public class ProductController {
         productService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
 }
