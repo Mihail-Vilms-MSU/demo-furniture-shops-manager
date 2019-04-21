@@ -12,13 +12,9 @@ import java.math.BigDecimal;
 
 /**
  * http://localhost:8080/products/search/findAll?page=2&size=3&sort=price,asc
- *
  * http://localhost:8080/products/search/findByName?name=Chair
  * http://localhost:8080/products/search/findByPrice?price=399
- *
  * http://localhost:8080/products/search/findWithPriceBetween?bottom=200&top=700&sort=price, desc
- *
-
  */
 @RepositoryRestResource(collectionResourceRel = "products", path = "products")
 public interface ProductRepository extends JpaRepository<Product, Long> {
@@ -26,18 +22,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p")
     Page<Product> findAll(Pageable p);
 
-    /*
-    @Query("SELECT p FROM Product p WHERE p.is_active = :active")
+    @Query("SELECT p FROM Product p WHERE p.isActive = :active")
     Page<Product> findAllActive(@Param("active") Boolean active, Pageable p);
-    */
 
     @Query("SELECT p FROM Product p WHERE p.type LIKE %:type%")
     Page<Product> findByType(@Param("type") String type, Pageable p);
 
     @Query("SELECT p FROM Product p WHERE p.name LIKE %:name%")
     Page<Product> findByName(@Param("name") String name, Pageable p);
-
-    Page<Product> findByPrice(@Param("price") BigDecimal price, Pageable p);
 
     @Query("SELECT p FROM Product p WHERE p.price >= :price")
     Page<Product> findWithPriceAbove(@Param("price") BigDecimal price, Pageable p);

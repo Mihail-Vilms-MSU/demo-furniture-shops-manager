@@ -1,24 +1,25 @@
 package com.mvilms.demo_furniture_shops_manager.data;
 
 import com.mvilms.demo_furniture_shops_manager.model.ShopToProduct;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-import java.util.List;
-
+@RepositoryRestResource(collectionResourceRel = "productAmounts", path = "productAmounts")
 public interface ShopToProductRepository extends JpaRepository<ShopToProduct, Long> {
 
-    // Returns all records from "shop_to_product" table
+    @Query("SELECT p FROM ShopToProduct p")
+    Page<ShopToProduct> findAll(Pageable p);
+
     @Query("SELECT p FROM ShopToProduct p WHERE p.shopId = :shopId")
-    List<ShopToProduct> findAll(@Param("shopId") Long shopId);
+    Page<ShopToProduct> findAllByShopId(@Param("shopId") Long shopId, Pageable p);
 
-    // Returns record from "shop_to_product" table
+    @Query("SELECT p FROM ShopToProduct p WHERE p.productId = :productId")
+    Page<ShopToProduct> findAllByProductId(@Param("productId") Long productId, Pageable p);
+
     @Query("SELECT p FROM ShopToProduct p WHERE p.shopId = :shopId AND p.productId = :productId")
-    ShopToProduct getRecord(@Param("shopId") Long shopId, @Param("productId") Long productId);
-
-    // Returns value - amount of product in shop
-    @Query("SELECT p.amount FROM ShopToProduct p WHERE p.shopId = :shopId AND p.productId = :productId")
-    Long getAmount(@Param("shopId") Long shopId, @Param("productId") Long productId);
-
+    ShopToProduct findOneRecord(@Param("shopId") Long shopId, @Param("productId") Long productId);
 }
