@@ -1,21 +1,13 @@
 package com.mvilms.demo_furniture_shops_manager.service;
 
 import com.mvilms.demo_furniture_shops_manager.data.ShopRepository;
-import com.mvilms.demo_furniture_shops_manager.data.ShopToProductRepository;
-import com.mvilms.demo_furniture_shops_manager.exceptions.ProductNotFoundException;
 import com.mvilms.demo_furniture_shops_manager.exceptions.ShopNotFoundException;
-import com.mvilms.demo_furniture_shops_manager.exceptions.ShortageOfProduct;
-import com.mvilms.demo_furniture_shops_manager.model.Product;
 import com.mvilms.demo_furniture_shops_manager.model.Shop;
-import com.mvilms.demo_furniture_shops_manager.model.ShopToProduct;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j

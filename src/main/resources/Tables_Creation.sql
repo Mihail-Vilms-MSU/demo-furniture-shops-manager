@@ -28,3 +28,15 @@ CREATE TABLE IF NOT EXISTS "shop_to_product" (
 	product_id INT NOT NULL,
 	amount INT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS "employee"
+(
+    id SERIAL PRIMARY KEY,
+    first_name character varying(255) NOT NULL,
+    last_name character varying(255) NOT NULL,
+    phone character varying(255) NOT NULL,
+    email character varying(255) NOT NULL,
+
+    shop_id INT NOT NULL,
+    role character varying(255) NOT NULL
+);

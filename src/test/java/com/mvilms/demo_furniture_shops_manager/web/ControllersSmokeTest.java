@@ -12,12 +12,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 public class ControllersSmokeTest {
     @Autowired ProductController productController;
-
+    @Autowired ShopController shopController;
+    @Autowired EmployeeController employeeController;
     /**
      * To convince yourself that the context is creating your controller you could add an assertion:
      */
     @Test
     public void contextLoads() throws Exception{
         assertThat(productController).isNotNull();
+        assertThat(shopController).isNotNull();
+        assertThat(employeeController).isNotNull();
     }
 }
