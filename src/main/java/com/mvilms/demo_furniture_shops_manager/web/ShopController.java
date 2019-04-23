@@ -26,12 +26,12 @@ public class ShopController {
     // #TODO#
     // Implement "NOT_FOUND" Exception
     @GetMapping("/shops/{id}")
-    ShopResource getById(@PathVariable Long id) {
+    public ShopResource getById(@PathVariable Long id) {
         return assembler.toResource(shopService.getById(id));
     }
 
     @GetMapping("/shops")
-    Resources<ShopResource> getAll() {
+    public Resources<ShopResource> getAll() {
         List<Shop> shops = shopService.getAll();
 
         List<ShopResource> shopResourceList =
@@ -47,12 +47,12 @@ public class ShopController {
     }
 
     @PostMapping("/shops")
-    ShopResource addNew(@RequestBody Shop newShop) {
+    public ShopResource addNew(@RequestBody Shop newShop) {
         return assembler.toResource(shopService.save(newShop));
     }
 
     @PutMapping("/shops/{id}")
-    ShopResource update(@RequestBody Shop newShop, @PathVariable Long id) throws URISyntaxException {
+    public ShopResource update(@RequestBody Shop newShop, @PathVariable Long id) throws URISyntaxException {
         Shop savedShop;
 
         try {

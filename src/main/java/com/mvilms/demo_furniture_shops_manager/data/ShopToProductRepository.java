@@ -15,10 +15,10 @@ public interface ShopToProductRepository extends JpaRepository<ShopToProduct, Lo
     Page<ShopToProduct> findAll(Pageable p);
 
     @Query("SELECT p FROM ShopToProduct p WHERE p.shopId = :shopId")
-    Page<ShopToProduct> findAllByShopId(@Param("shopId") Long shopId, Pageable p);
+    Page<ShopToProduct> findByShopId(@Param("shopId") Long shopId, Pageable p);
 
     @Query("SELECT p FROM ShopToProduct p WHERE p.productId = :productId")
-    Page<ShopToProduct> findAllByProductId(@Param("productId") Long productId, Pageable p);
+    Page<ShopToProduct> findByProductId(@Param("productId") Long productId, Pageable p);
 
     @Query("SELECT p FROM ShopToProduct p WHERE p.shopId = :shopId AND p.productId = :productId")
     ShopToProduct findOneRecord(@Param("shopId") Long shopId, @Param("productId") Long productId);
