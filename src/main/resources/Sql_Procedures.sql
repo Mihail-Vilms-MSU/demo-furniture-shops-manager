@@ -400,10 +400,3 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE fill_demo_data_purchase_to_product()
-LANGUAGE plpgsql
-AS $$
-BEGIN
-COMMIT;
-END;
-$$;

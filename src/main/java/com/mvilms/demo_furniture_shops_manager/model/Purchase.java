@@ -13,8 +13,9 @@ public class Purchase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long shopId;
     private Long employeeId;
-    private BigDecimal price;
-    private Date createdAt;
+    private Long shopId;
+    private BigDecimal totalPrice;
+
+    private Date registeredAt;
 }
