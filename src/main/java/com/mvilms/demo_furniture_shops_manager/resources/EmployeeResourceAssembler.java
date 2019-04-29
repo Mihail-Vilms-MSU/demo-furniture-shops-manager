@@ -2,11 +2,8 @@ package com.mvilms.demo_furniture_shops_manager.resources;
 
 
 import com.mvilms.demo_furniture_shops_manager.model.Employee;
-import com.mvilms.demo_furniture_shops_manager.model.Product;
 import com.mvilms.demo_furniture_shops_manager.web.EmployeeController;
-import com.mvilms.demo_furniture_shops_manager.web.ProductController;
 import com.mvilms.demo_furniture_shops_manager.web.ShopController;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Service;
 

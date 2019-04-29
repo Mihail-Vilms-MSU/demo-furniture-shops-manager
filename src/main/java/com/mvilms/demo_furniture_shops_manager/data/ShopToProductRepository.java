@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(collectionResourceRel = "productAmounts", path = "productAmounts")
+@RepositoryRestResource(collectionResourceRel = "productReserve", path = "productReserves")
 public interface ShopToProductRepository extends JpaRepository<ShopToProduct, Long> {
 
     @Query("SELECT p FROM ShopToProduct p")

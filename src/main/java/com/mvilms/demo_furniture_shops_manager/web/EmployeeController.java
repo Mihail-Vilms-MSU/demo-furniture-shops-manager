@@ -15,6 +15,7 @@ import java.util.List;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
+// http://localhost:8080/employees/search/findByShopId?shopId=1
 @RestController
 @Slf4j
 public class EmployeeController {
@@ -23,16 +24,15 @@ public class EmployeeController {
     @Autowired
     EmployeeResourceAssembler assembler;
 
-    // #TODO#
-    // Implement "NOT_FOUND" Exception
     @GetMapping("/employees/{id}")
     public EmployeeResource getById(@PathVariable Long id) {
         return assembler.toResource(employeeService.getById(id));
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/employees")
     public Resources<EmployeeResource> getAll() {
-
+        log.info("~~~  ~~~  ~~~  in getAll1(): ");
         List<EmployeeResource> employeeResourcesList =
                 assembler.toResources(employeeService.getAll());
 
@@ -41,6 +41,8 @@ public class EmployeeController {
 
         employeeResources
                 .add(linkTo(methodOn(EmployeeController.class).getAll()).withSelfRel());
+
+        log.info("~~~  ~~~  ~~~  in getAll2(): ");
 
         return employeeResources;
     }
@@ -74,7 +76,7 @@ public class EmployeeController {
         } catch (ProductNotFoundException exception) { // haven't found existing product record
             savedEmployee = employeeService.save(newEmployee);
         }
-
+        log.info("~~~ productsList: ");
         return assembler.toResource(savedEmployee);
     }
 }

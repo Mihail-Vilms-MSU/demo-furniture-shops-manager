@@ -6,7 +6,7 @@ import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.core.Relation;
 
 @Relation(value="employee", collectionRelation="employees")
-public class EmployeeResource  extends ResourceSupport {
+public class EmployeeResource extends ResourceSupport {
     @Getter
     private String firstName;
     @Getter
