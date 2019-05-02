@@ -1,5 +1,6 @@
 package com.mvilms.demo_furniture_shops_manager.web;
 
+
 import com.mvilms.demo_furniture_shops_manager.exceptions.ProductNotFoundException;
 import com.mvilms.demo_furniture_shops_manager.model.Product;
 import com.mvilms.demo_furniture_shops_manager.resources.ProductResource;
@@ -25,13 +26,13 @@ public class ProductController {
     @Autowired
     ProductResourceAssembler assembler;
 
-    // #TODO#
-    // Implement "NOT_FOUND" Exception
+    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/products/{id}")
     ProductResource getById(@PathVariable Long id) {
         return assembler.toResource(productService.getById(id));
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/products")
     Resources<ProductResource> getAll() {
 
@@ -56,6 +57,8 @@ public class ProductController {
     ProductResource update(@RequestBody Product newProduct, @PathVariable Long id) throws URISyntaxException {
         Product savedProduct;
 
+        // java 8 optional - isPresent()
+
         try {
             Product oldProduct = productService.getById(id);
 
@@ -70,8 +73,8 @@ public class ProductController {
 
             savedProduct = productService.save(oldProduct);
         } catch (ProductNotFoundException exception){ // haven't found existing product record
-            savedProduct = productService.save(newProduct);
-        }
+        savedProduct = productService.save(newProduct);
+    }
 
         return assembler.toResource(savedProduct);
     }

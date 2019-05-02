@@ -15,10 +15,7 @@ public class ProductService {
     @Autowired
     ProductRepository productRepository;
 
-    public Product getById(Long id) throws ProductNotFoundException{
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
-    }
+    public Product getById(Long id){ return productRepository.getOne(id); }
 
     public List<Product> getAll(){
         return productRepository.findAll();

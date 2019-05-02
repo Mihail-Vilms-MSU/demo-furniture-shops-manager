@@ -1,24 +1,33 @@
 package com.mvilms.demo_furniture_shops_manager.service;
 
 import com.mvilms.demo_furniture_shops_manager.data.ShopRepository;
+import com.mvilms.demo_furniture_shops_manager.data.ShopToProductRepository;
 import com.mvilms.demo_furniture_shops_manager.exceptions.ShopNotFoundException;
+import com.mvilms.demo_furniture_shops_manager.exceptions.ShortageOfProduct;
+import com.mvilms.demo_furniture_shops_manager.model.Employee;
 import com.mvilms.demo_furniture_shops_manager.model.Shop;
+import com.mvilms.demo_furniture_shops_manager.model.ShopToProduct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
 public class ShopService {
     @Autowired
     ShopRepository shopRepository;
+    @Autowired
+    ShopToProductRepository shopToProductRepository;
+    @Autowired
+    EmployeeService employeeService;
 
-    public Shop getById(Long id) throws ShopNotFoundException {
-        return shopRepository.findById(id)
-                .orElseThrow(() -> new ShopNotFoundException(id));
-    }
+    public Shop getById(Long id){ return shopRepository.getOne(id); }
 
     public List<Shop> getAll(){
         return shopRepository.findAll();
@@ -32,7 +41,9 @@ public class ShopService {
         shopRepository.deleteById(id);
     }
 
-//////////////////////////////////////////////////////////////////////////////////////
+    public Page<Employee> getEmployees(Long id){
+        return employeeService.getEmployeesByShopId(id);
+    }
 
     /**
      * Finds out how many items of particular product there are at shop
@@ -41,34 +52,41 @@ public class ShopService {
      * @param productId
      * @return Available amount of product in shop
      */
-    /*
     public Long getAmountOfProduct(Long shopId, Long productId){
-        Long amount = shopToProductRepository.getAmount(shopId, productId);
-        return (amount != null) ? amount: (long)0;
+        ShopToProduct shopToProduct = shopToProductRepository.findOneRecord(shopId, productId);
+        if (shopToProduct == null) return (long)0;
+        return shopToProduct.getAmount();
     }
-    */
 
     /**
-     * Returns map with key corresponds to product ID
-     * and value corresponds to available amount of this product within shop
      *
-     * @param shopId Shop ID we want to know available amount of products for
-     * @return {product id: amount of units available}
+     * @param shopId
+     * @param productId
+     * @param targetAmount
+     * @return
      */
-    /*
-    public Map<Long, Long> getAmountOfProductsMap(Long shopId){
-        System.out.println("getAmountOfProductsMap shopId: " + shopId);
-        return shopToProductRepository.findAll(shopId)
-                .stream()
-                .collect(Collectors.toMap(ShopToProduct::getProductId, ShopToProduct::getAmount));
+    public Boolean hasEnoughAmountOfProduct(Long shopId, Long productId, Long targetAmount){
+        Long amountOfProduct = getAmountOfProduct(shopId, productId);
+        if (amountOfProduct >= targetAmount) return true;
+        return false;
     }
-    */
-    /*
-    public List<ShopToProduct> getAmountOfProducts(Long shopId){
-        return shopToProductRepository.findAll(shopId);
+
+    /**
+     *
+     * @param shopId
+     * @param targetAmountOfProducts
+     * @return
+     */
+    public Boolean hasEnoughAmountOfProducts(Long shopId, Map<Long, Long> targetAmountOfProducts){
+        return targetAmountOfProducts.entrySet().stream()
+            .allMatch(amountOfProduct -> {
+                Long productId = amountOfProduct.getKey();
+                Long amount = amountOfProduct.getValue();
+                return hasEnoughAmountOfProduct(shopId, productId, amount);
+            });
     }
-    */
-    /** ---DONE!!!
+
+    /**
      * Saves value defines new amount of product available at shop
      * Inserts new record if there was no one with specified shop and product ids
      *
@@ -77,57 +95,46 @@ public class ShopService {
      * @param newValue
      * @return Saved record
      */
-    /*
-    private ShopToProduct saveNewAmountOfProduct(Long shopId, Long ProductId, Long newValue){
-        ShopToProduct oldRecord = shopToProductRepository.getRecord(shopId, ProductId);
-        if (oldRecord == null){
-            return shopToProductRepository.save(new ShopToProduct(shopId, ProductId, newValue));
+    private void saveNewAmountOfProduct(Long shopId, Long ProductId, Long newValue){
+        ShopToProduct oldRecord = shopToProductRepository.findOneRecord(shopId, ProductId);
+
+        if (oldRecord != null && newValue != 0) {
+            oldRecord.setAmount(newValue);
+            shopToProductRepository.save(oldRecord);
+            return;
         }
-        oldRecord.setAmount(newValue);
-        return shopToProductRepository.save(oldRecord);
+
+        if (oldRecord == null && newValue != 0) {
+            shopToProductRepository.save(new ShopToProduct(shopId, ProductId, newValue));
+            return;
+        }
+
+        if (oldRecord != null && newValue == 0) {
+            shopToProductRepository.deleteById(oldRecord.getId());
+            return;
+        }
+
+        return;
     }
-    */
-    /** ---DONE!!!
-     * Changes amount of product available at shop
+
+    /**
      *
      * @param shopId
-     * @param productId
-     * @param diff Can be positive or negative value
-     * @return Current amount of product
-     */
-    /*
-    public Long changeAmountOfProduct(Long shopId, Long productId, Long diff) throws ShortageOfProduct{
-        Long oldAmount = getAmountOfProduct(shopId, productId);
-        ShopToProduct newRecord;
-
-        if (diff == 0) return oldAmount;
-        if (diff + oldAmount < 0) throw new ShortageOfProduct(shopId, productId);
-        newRecord = saveNewAmountOfProduct(shopId, productId, oldAmount + diff);
-
-        return newRecord.getAmount();
-    }
-    */
-    /**
-     * Changes amount of different products units in shop storage
-     *
-     * @param shopId Shop we want to add products to
-     * @param productsDiffMap Map with key corresponds to product ID
-     *                     and value corresponds to amount of units we want to add/withdraw
+     * @param targetAmounts
      * @return
      */
-    /*
-    public void changeAmountOfProducts(Long shopId, Map<Long, Long> productsDiffMap){
-        productsDiffMap.entrySet().stream()
-            .forEach(productDiff -> {
-                Long productId = productDiff.getKey();
-                Long diff = productDiff.getValue();
+    public Boolean withdrawProducts(Long shopId, Map<Long, Long> targetAmounts){
+        Boolean isEnoughProducts = hasEnoughAmountOfProducts(shopId, targetAmounts);
+        if (!isEnoughProducts) return false;
 
-                try {
-                    changeAmountOfProduct(shopId, productId, diff);
-                } catch (ShortageOfProduct exception) {
-                    log.error("Lack of product in storage. Product id: " + productId);
-                }
+        targetAmounts.entrySet().stream()
+            .forEach(targetAmount -> {
+                Long productId = targetAmount.getKey();
+                Long amount = targetAmount.getValue();
+                ShopToProduct shopToProduct = shopToProductRepository.findOneRecord(shopId, productId);
+                saveNewAmountOfProduct(shopId, productId, shopToProduct.getAmount() - amount);
             });
+
+        return  true;
     }
-    */
 }

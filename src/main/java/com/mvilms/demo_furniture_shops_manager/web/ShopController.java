@@ -1,11 +1,14 @@
 package com.mvilms.demo_furniture_shops_manager.web;
 
 import com.mvilms.demo_furniture_shops_manager.exceptions.ProductNotFoundException;
+import com.mvilms.demo_furniture_shops_manager.model.Employee;
 import com.mvilms.demo_furniture_shops_manager.model.Shop;
+import com.mvilms.demo_furniture_shops_manager.model.ShopToProduct;
 import com.mvilms.demo_furniture_shops_manager.resources.*;
 import com.mvilms.demo_furniture_shops_manager.service.ShopService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.Resources;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +33,7 @@ public class ShopController {
         return assembler.toResource(shopService.getById(id));
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/shops")
     public Resources<ShopResource> getAll() {
         List<Shop> shops = shopService.getAll();
@@ -45,6 +49,12 @@ public class ShopController {
 
         return shopResources;
     }
+
+    @GetMapping("/shops/{id}/employees")
+    public Page<Employee> getEmployees(@PathVariable Long id) {
+        return shopService.getEmployees(id);
+    }
+    /////////////////////////////////////////////////////////////////////
 
     @PostMapping("/shops")
     public ShopResource addNew(@RequestBody Shop newShop) {
@@ -76,6 +86,7 @@ public class ShopController {
 
         return assembler.toResource(savedShop);
     }
+
     /*
     @GetMapping("/shops/{shop_id}/products")
     Resources<ProductAmountResource> getProductsInShop(@PathVariable Long shop_id) {

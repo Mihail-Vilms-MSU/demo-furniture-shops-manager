@@ -10,6 +10,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(collectionResourceRel = "employees", path = "employees")
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+
     @Query("SELECT e FROM Employee e")
     Page<Employee> findAll(Pageable p);
 
@@ -24,4 +25,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     @Query("SELECT e FROM Employee e WHERE e.firstName LIKE %:name% OR e.lastName LIKE %:name%")
     Page<Employee> findByName(@Param("name") String name, Pageable p);
+
 }

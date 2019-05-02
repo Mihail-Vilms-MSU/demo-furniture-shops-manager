@@ -14,4 +14,14 @@ public class PurchaseToProduct {
     private Long purchaseId;
     private Long productId;
     private Long amount;
+
+    public PurchaseToProduct(){
+    }
+
+    public PurchaseToProduct(Long purchaseId, Long productId, Long amount){
+        this();
+        this.purchaseId = purchaseId;
+        this.productId = productId;
+        this.amount = amount;
+    }
 }
