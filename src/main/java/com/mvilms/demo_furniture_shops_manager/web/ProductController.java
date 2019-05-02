@@ -26,11 +26,13 @@ public class ProductController {
     @Autowired
     ProductResourceAssembler assembler;
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/products/{id}")
     ProductResource getById(@PathVariable Long id) {
         return assembler.toResource(productService.getById(id));
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/products")
     Resources<ProductResource> getAll() {
 

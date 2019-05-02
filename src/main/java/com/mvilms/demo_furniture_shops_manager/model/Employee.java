@@ -1,5 +1,6 @@
 package com.mvilms.demo_furniture_shops_manager.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -16,6 +17,8 @@ public class Employee {
     private String phone;
     private String email;
 
-    private Long shopId;
+    @ManyToOne
+    @JoinColumn(name = "shop_id", nullable = false)
+    private Shop shopId;
     private String role;
 }

@@ -1,6 +1,7 @@
 package com.mvilms.demo_furniture_shops_manager.resources;
 
 import com.mvilms.demo_furniture_shops_manager.model.Employee;
+import com.mvilms.demo_furniture_shops_manager.model.Shop;
 import lombok.Getter;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.core.Relation;
@@ -16,7 +17,7 @@ public class EmployeeResource extends ResourceSupport {
     @Getter
     private String email;
     @Getter
-    private Long shopId;
+    private Shop shopId;
     @Getter
     private String role;
 

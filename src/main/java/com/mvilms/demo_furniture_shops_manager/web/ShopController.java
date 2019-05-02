@@ -33,6 +33,7 @@ public class ShopController {
         return assembler.toResource(shopService.getById(id));
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/shops")
     public Resources<ShopResource> getAll() {
         List<Shop> shops = shopService.getAll();

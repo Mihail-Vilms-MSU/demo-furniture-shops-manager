@@ -49,19 +49,21 @@ public class PurchaseService {
      * @param purchase
      * @return
      */
+    /*
     Long getShopId(Purchase purchase){
         Long employeeId = purchase.getEmployeeId();
         Employee employee = employeeService.getById(employeeId);
         Long shopId = employee.getShopId();
         return shopId;
     }
-
+    */
     /**
      *
      * @param newPurchase
      * @param amountOfProducts
      * @return
      */
+    /*
     public Boolean createPurchase(Purchase newPurchase, Map<Long, Long> amountOfProducts){
         Long shopId = getShopId(newPurchase);
         Boolean isEnoughAmount = shopService.hasEnoughAmountOfProducts(shopId, amountOfProducts);
@@ -78,5 +80,5 @@ public class PurchaseService {
 
         return shopService.withdrawProducts(shopId, amountOfProducts);
     }
-
+    */
 }

@@ -32,7 +32,7 @@ public class EmployeeController {
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/employees")
     public Resources<EmployeeResource> getAll() {
-        log.info("~~~  ~~~  ~~~  in getAll1(): ");
+        log.info("Get all Employee resources: ");
         List<EmployeeResource> employeeResourcesList =
                 assembler.toResources(employeeService.getAll());
 
