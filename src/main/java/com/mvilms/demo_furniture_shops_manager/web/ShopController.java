@@ -49,11 +49,12 @@ public class ShopController {
 
         return shopResources;
     }
-
+    /*
     @GetMapping("/shops/{id}/employees")
     public Page<Employee> getEmployees(@PathVariable Long id) {
         return shopService.getEmployees(id);
     }
+    */
     /////////////////////////////////////////////////////////////////////
 
     @PostMapping("/shops")

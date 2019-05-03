@@ -10,7 +10,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(collectionResourceRel = "shops", path = "shops")
 public interface ShopRepository extends JpaRepository<Shop, Long> {
-    /*
+
     @Query("SELECT s FROM Shop s")
     Page<Shop> findAll(Pageable p);
 
@@ -25,5 +25,5 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
 
     @Query("SELECT s from Shop s WHERE s.address LIKE %:address%")
     Page<Shop> findByAddress(@Param("address") String address, Pageable p);
-    */
+
 }

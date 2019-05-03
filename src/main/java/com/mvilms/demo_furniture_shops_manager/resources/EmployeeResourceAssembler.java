@@ -1,6 +1,5 @@
 package com.mvilms.demo_furniture_shops_manager.resources;
 
-
 import com.mvilms.demo_furniture_shops_manager.model.Employee;
 import com.mvilms.demo_furniture_shops_manager.web.EmployeeController;
 import com.mvilms.demo_furniture_shops_manager.web.ShopController;
@@ -25,7 +24,7 @@ public class EmployeeResourceAssembler extends ResourceAssemblerSupport<Employee
 
         employeeResource.add(linkTo(methodOn(EmployeeController.class).getAll()).withRel("employees"));
 
-        // employeeResource.add(linkTo(methodOn(ShopController.class).getById(employee.getShopId())).withRel("shop"));
+        employeeResource.add(linkTo(methodOn(ShopController.class).getById(employee.getShop().getId())).withRel("shop"));
 
         return employeeResource;
     }

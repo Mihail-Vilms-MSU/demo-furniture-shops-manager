@@ -24,10 +24,12 @@ public class EmployeeService {
         return employeeRepository.getOne(id);
     }
 
+    /*
     public Page<Employee> getEmployeesByShopId(Long shopId){
         return employeeRepository
                 .findByShopId(shopId, PageRequest.of(0, 5, Sort.by("lastName").descending()));
     }
+    */
 
     public List<Employee> getAll(){
         return employeeRepository.findAll();

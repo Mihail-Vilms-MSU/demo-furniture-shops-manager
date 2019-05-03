@@ -17,16 +17,16 @@ public class EmployeeResource extends ResourceSupport {
     @Getter
     private String email;
     @Getter
-    private Shop shopId;
+    private Shop shop;
     @Getter
     private String role;
 
     public EmployeeResource(Employee employee) {
         this.firstName = employee.getFirstName();
         this.lastName = employee.getLastName();
+        this.role = employee.getRole();
         this.phone = employee.getPhone();
         this.email = employee.getEmail();
-        this.shopId = employee.getShopId();
-        this.role = employee.getRole();
+        this.shop = employee.getShop();
     }
 }

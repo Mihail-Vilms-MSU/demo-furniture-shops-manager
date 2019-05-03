@@ -19,22 +19,25 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RestController
 @Slf4j
 public class EmployeeController {
-    @Autowired
-    EmployeeService employeeService;
-    @Autowired
-    EmployeeResourceAssembler assembler;
+    private final EmployeeService service;
+    private final EmployeeResourceAssembler assembler;
 
+    public EmployeeController(EmployeeService service, EmployeeResourceAssembler assembler) {
+        this.service = service;
+        this.assembler = assembler;
+    }
+
+    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/employees/{id}")
     public EmployeeResource getById(@PathVariable Long id) {
-        return assembler.toResource(employeeService.getById(id));
+        return assembler.toResource(service.getById(id));
     }
 
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/employees")
     public Resources<EmployeeResource> getAll() {
-        log.info("Get all Employee resources: ");
         List<EmployeeResource> employeeResourcesList =
-                assembler.toResources(employeeService.getAll());
+                assembler.toResources(service.getAll());
 
         Resources<EmployeeResource> employeeResources =
                 new Resources<EmployeeResource>(employeeResourcesList);
@@ -42,14 +45,12 @@ public class EmployeeController {
         employeeResources
                 .add(linkTo(methodOn(EmployeeController.class).getAll()).withSelfRel());
 
-        log.info("~~~  ~~~  ~~~  in getAll2(): ");
-
         return employeeResources;
     }
 
     @PostMapping("/employees")
     public EmployeeResource addNew(@RequestBody Employee newEmployee) {
-        return assembler.toResource(employeeService.save(newEmployee));
+        return assembler.toResource(service.save(newEmployee));
     }
 
     @PutMapping("/employees/{id}")
@@ -57,7 +58,7 @@ public class EmployeeController {
         Employee savedEmployee;
 
         try {
-            Employee oldEmployee = employeeService.getById(id);
+            Employee oldEmployee = service.getById(id);
 
             if (newEmployee.getFirstName() != null)
                 oldEmployee.setFirstName(newEmployee.getFirstName());
@@ -67,16 +68,12 @@ public class EmployeeController {
                 oldEmployee.setPhone(newEmployee.getPhone());
             if (newEmployee.getEmail() != null)
                 oldEmployee.setEmail(newEmployee.getEmail());
-            if (newEmployee.getShopId() != null)
-                oldEmployee.setShopId(newEmployee.getShopId());
-            if (newEmployee.getShopId() != null)
-                oldEmployee.setShopId(newEmployee.getShopId());
 
-            savedEmployee = employeeService.save(oldEmployee);
+            savedEmployee = service.save(oldEmployee);
         } catch (ProductNotFoundException exception) { // haven't found existing product record
-            savedEmployee = employeeService.save(newEmployee);
+            savedEmployee = service.save(newEmployee);
         }
-        log.info("~~~ productsList: ");
+
         return assembler.toResource(savedEmployee);
     }
 }

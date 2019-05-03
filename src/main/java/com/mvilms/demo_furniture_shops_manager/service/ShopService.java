@@ -40,11 +40,11 @@ public class ShopService {
     public void delete(Long id) {
         shopRepository.deleteById(id);
     }
-
+    /*
     public Page<Employee> getEmployees(Long id){
         return employeeService.getEmployeesByShopId(id);
     }
-
+    */
     /**
      * Finds out how many items of particular product there are at shop
      *
