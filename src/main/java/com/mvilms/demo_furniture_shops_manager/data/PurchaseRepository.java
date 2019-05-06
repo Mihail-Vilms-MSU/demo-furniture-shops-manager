@@ -6,17 +6,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.math.BigDecimal;
 
+@CrossOrigin(origins = "http://localhost:4200")
+@RepositoryRestResource(collectionResourceRel = "purchases", path = "purchases")
 public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
 
     @Query("SELECT p FROM Purchase p")
     Page<Purchase> findAll(Pageable p);
-
+/*
     @Query("SELECT p FROM Purchase p WHERE p.employeeId = :employeeId")
     Page<Purchase> findByEmployeeId(@Param("employeeId") Long employeeId, Pageable p);
-
+*/
 
     // Search by price;
 

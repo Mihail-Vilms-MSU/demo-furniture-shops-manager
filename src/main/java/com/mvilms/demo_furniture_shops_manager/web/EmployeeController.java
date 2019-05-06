@@ -6,16 +6,21 @@ import com.mvilms.demo_furniture_shops_manager.resources.EmployeeResource;
 import com.mvilms.demo_furniture_shops_manager.resources.EmployeeResourceAssembler;
 import com.mvilms.demo_furniture_shops_manager.service.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resources;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 // http://localhost:8080/employees/search/findByShopId?shopId=1
+
 @RestController
 @Slf4j
 public class EmployeeController {
@@ -27,6 +32,8 @@ public class EmployeeController {
         this.assembler = assembler;
     }
 
+    //////////////////////////////////////////////////////////////////////////
+
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/employees/{id}")
     public EmployeeResource getById(@PathVariable Long id) {
@@ -35,18 +42,23 @@ public class EmployeeController {
 
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/employees")
-    public Resources<EmployeeResource> getAll() {
-        List<EmployeeResource> employeeResourcesList =
-                assembler.toResources(service.getAll());
+    public PagedResources<EmployeeResource> getAll(Pageable pageable) {
+        Page page = service.getAll(pageable);
 
-        Resources<EmployeeResource> employeeResources =
-                new Resources<EmployeeResource>(employeeResourcesList);
+        List<EmployeeResource> employeeListResources= (List) page.getContent()
+                .stream()
+                .map(employee -> {
+                    return assembler.toResource((Employee) employee);
+                })
+                .collect(Collectors.toList());
 
-        employeeResources
-                .add(linkTo(methodOn(EmployeeController.class).getAll()).withSelfRel());
+        PagedResources.PageMetadata pageMetadata =
+                new PagedResources.PageMetadata(page.getSize(), page.getNumber(), page.getTotalElements(), page.getTotalPages());
 
-        return employeeResources;
+        return new PagedResources<EmployeeResource>(employeeListResources, pageMetadata);
     }
+
+    //////////////////////////////////////////////////////////////////////////
 
     @PostMapping("/employees")
     public EmployeeResource addNew(@RequestBody Employee newEmployee) {

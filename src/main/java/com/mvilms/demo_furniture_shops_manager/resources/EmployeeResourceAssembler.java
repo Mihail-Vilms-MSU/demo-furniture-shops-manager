@@ -22,7 +22,7 @@ public class EmployeeResourceAssembler extends ResourceAssemblerSupport<Employee
 
         employeeResource.add(linkTo(methodOn(EmployeeController.class).getById(employee.getId())).withSelfRel());
 
-        employeeResource.add(linkTo(methodOn(EmployeeController.class).getAll()).withRel("employees"));
+        // employeeResource.add(linkTo(methodOn(EmployeeController.class).getAll()).withRel("employees"));
 
         employeeResource.add(linkTo(methodOn(ShopController.class).getById(employee.getShop().getId())).withRel("shop"));
 

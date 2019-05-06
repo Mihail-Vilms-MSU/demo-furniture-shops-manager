@@ -2,15 +2,13 @@ package com.mvilms.demo_furniture_shops_manager.service;
 
 import com.mvilms.demo_furniture_shops_manager.data.PurchaseRepository;
 import com.mvilms.demo_furniture_shops_manager.data.PurchaseToProductRepository;
-import com.mvilms.demo_furniture_shops_manager.model.Employee;
 import com.mvilms.demo_furniture_shops_manager.model.Purchase;
 import com.mvilms.demo_furniture_shops_manager.model.PurchaseToProduct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -25,13 +23,14 @@ public class PurchaseService {
     @Autowired
     EmployeeService employeeService;
 
+    //////////////////////////////////////////////////////////////////////
 
     public Purchase getById(Long id) {
         return purchaseRepository.getOne(id);
     }
 
-    public List<Purchase> getAll(){
-        return purchaseRepository.findAll();
+    public Page getAll(Pageable pageable){
+        return purchaseRepository.findAll(pageable);
     }
 
     ////////////////////////////////////////////////////////

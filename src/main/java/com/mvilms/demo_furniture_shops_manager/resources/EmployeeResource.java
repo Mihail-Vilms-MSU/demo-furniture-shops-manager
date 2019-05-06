@@ -9,6 +9,8 @@ import org.springframework.hateoas.core.Relation;
 @Relation(value="employee", collectionRelation="employees")
 public class EmployeeResource extends ResourceSupport {
     @Getter
+    private Long employeeId;
+    @Getter
     private String firstName;
     @Getter
     private String lastName;
@@ -17,16 +19,17 @@ public class EmployeeResource extends ResourceSupport {
     @Getter
     private String email;
     @Getter
-    private Shop shop;
-    @Getter
     private String role;
+    @Getter
+    private Shop shop;
 
     public EmployeeResource(Employee employee) {
+        this.employeeId = employee.getId();
         this.firstName = employee.getFirstName();
         this.lastName = employee.getLastName();
-        this.role = employee.getRole();
         this.phone = employee.getPhone();
         this.email = employee.getEmail();
+        this.role = employee.getRole();
         this.shop = employee.getShop();
     }
 }

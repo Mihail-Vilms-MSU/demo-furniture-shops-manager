@@ -25,5 +25,5 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
 
     @Query("SELECT s from Shop s WHERE s.address LIKE %:address%")
     Page<Shop> findByAddress(@Param("address") String address, Pageable p);
-
+    
 }

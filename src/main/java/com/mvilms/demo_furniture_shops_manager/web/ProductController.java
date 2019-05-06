@@ -1,56 +1,63 @@
 package com.mvilms.demo_furniture_shops_manager.web;
 
-
 import com.mvilms.demo_furniture_shops_manager.exceptions.ProductNotFoundException;
 import com.mvilms.demo_furniture_shops_manager.model.Product;
 import com.mvilms.demo_furniture_shops_manager.resources.ProductResource;
 import com.mvilms.demo_furniture_shops_manager.resources.ProductResourceAssembler;
 import com.mvilms.demo_furniture_shops_manager.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Resources;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URISyntaxException;
 import java.util.List;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
 public class ProductController {
-    @Autowired
-    ProductService productService;
-    @Autowired
-    ProductResourceAssembler assembler;
+    private final ProductService service;
+    private final ProductResourceAssembler assembler;
+    public ProductController(ProductService service, ProductResourceAssembler assembler) {
+        this.service = service;
+        this.assembler = assembler;
+    }
+
+    //////////////////////////////////////////////////////////////////////
 
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/products/{id}")
-    ProductResource getById(@PathVariable Long id) {
-        return assembler.toResource(productService.getById(id));
+    public ProductResource getById(@PathVariable Long id) {
+        return assembler.toResource(service.getById(id));
     }
 
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/products")
-    Resources<ProductResource> getAll() {
+    public PagedResources<ProductResource> getAll(Pageable pageable) {
+        Page page = service.getAll(pageable);
 
-        List<ProductResource> productResourcesList =
-                assembler.toResources(productService.getAll());
+        List<ProductResource> productResourceList = (List) page.getContent()
+            .stream()
+            .map(product -> {
+                return assembler.toResource((Product) product);
+            })
+            .collect(Collectors.toList());
 
-        Resources<ProductResource> productResources =
-                new Resources<ProductResource>(productResourcesList);
+        PagedResources.PageMetadata pageMetadata =
+                new PagedResources.PageMetadata(page.getSize(), page.getNumber(), page.getTotalElements(), page.getTotalPages());
 
-        productResources
-                .add(linkTo(methodOn(ProductController.class).getAll()).withSelfRel());
-
-        return productResources;
+        return new PagedResources<ProductResource>(productResourceList, pageMetadata);
     }
 
+    //////////////////////////////////////////////////////////////////////
+
+    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/products")
     ProductResource addNew(@RequestBody Product newProduct) {
-        return assembler.toResource(productService.save(newProduct));
+        return assembler.toResource(service.save(newProduct));
     }
 
     @PutMapping("/products/{id}")
@@ -60,7 +67,7 @@ public class ProductController {
         // java 8 optional - isPresent()
 
         try {
-            Product oldProduct = productService.getById(id);
+            Product oldProduct = service.getById(id);
 
             if (newProduct.getName() != null)
                 oldProduct.setName(newProduct.getName());
@@ -71,9 +78,9 @@ public class ProductController {
             if (newProduct.getType() != null)
                 oldProduct.setType(newProduct.getType());
 
-            savedProduct = productService.save(oldProduct);
+            savedProduct = service.save(oldProduct);
         } catch (ProductNotFoundException exception){ // haven't found existing product record
-        savedProduct = productService.save(newProduct);
+        savedProduct = service.save(newProduct);
     }
 
         return assembler.toResource(savedProduct);
@@ -81,7 +88,7 @@ public class ProductController {
 
     @DeleteMapping("/products/{id}")
     ResponseEntity<?> delete(@PathVariable Long id) {
-        productService.delete(id);
+        service.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
