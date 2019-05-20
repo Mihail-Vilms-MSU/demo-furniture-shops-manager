@@ -6,77 +6,77 @@ import com.mvilms.demo_furniture_shops_manager.resources.EmployeeResource;
 import com.mvilms.demo_furniture_shops_manager.resources.EmployeeResourceAssembler;
 import com.mvilms.demo_furniture_shops_manager.service.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Resources;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import java.util.stream.Collectors;
 
 // http://localhost:8080/employees/search/findByShopId?shopId=1
+
 @RestController
 @Slf4j
 public class EmployeeController {
-    @Autowired
-    EmployeeService employeeService;
-    @Autowired
-    EmployeeResourceAssembler assembler;
+    private final EmployeeService service;
+    private final EmployeeResourceAssembler assembler;
 
+    public EmployeeController(EmployeeService service, EmployeeResourceAssembler assembler) {
+        this.service = service;
+        this.assembler = assembler;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/employees/{id}")
-    public EmployeeResource getById(@PathVariable Long id) {
-        return assembler.toResource(employeeService.getById(id));
+    public EmployeeResource getById(@PathVariable String id) {
+        return assembler.toResource(service.getById(id));
     }
 
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/employees")
-    public Resources<EmployeeResource> getAll() {
-        log.info("Get all Employee resources: ");
-        List<EmployeeResource> employeeResourcesList =
-                assembler.toResources(employeeService.getAll());
+    public PagedResources<EmployeeResource> getAll(Pageable pageable) {
+        Page page = service.getAll(pageable);
 
-        Resources<EmployeeResource> employeeResources =
-                new Resources<EmployeeResource>(employeeResourcesList);
+        List<EmployeeResource> employeeListResources= (List) page.getContent()
+                .stream()
+                .map(employee -> {
+                    return assembler.toResource((Employee) employee);
+                })
+                .collect(Collectors.toList());
 
-        employeeResources
-                .add(linkTo(methodOn(EmployeeController.class).getAll()).withSelfRel());
+        PagedResources.PageMetadata pageMetadata =
+                new PagedResources.PageMetadata(page.getSize(), page.getNumber(), page.getTotalElements(), page.getTotalPages());
 
-        log.info("~~~  ~~~  ~~~  in getAll2(): ");
-
-        return employeeResources;
+        return new PagedResources<EmployeeResource>(employeeListResources, pageMetadata);
     }
+
+    //////////////////////////////////////////////////////////////////////////
 
     @PostMapping("/employees")
     public EmployeeResource addNew(@RequestBody Employee newEmployee) {
-        return assembler.toResource(employeeService.save(newEmployee));
+        return assembler.toResource(service.save(newEmployee));
     }
 
     @PutMapping("/employees/{id}")
-    public EmployeeResource update(@RequestBody Employee newEmployee, @PathVariable Long id) {
+    public EmployeeResource update(@RequestBody Employee newEmployee, @PathVariable String id) {
         Employee savedEmployee;
 
-        try {
-            Employee oldEmployee = employeeService.getById(id);
+        Employee oldEmployee = service.getById(id);
 
-            if (newEmployee.getFirstName() != null)
-                oldEmployee.setFirstName(newEmployee.getFirstName());
-            if (newEmployee.getLastName() != null)
-                oldEmployee.setLastName(newEmployee.getLastName());
-            if (newEmployee.getPhone() != null)
-                oldEmployee.setPhone(newEmployee.getPhone());
-            if (newEmployee.getEmail() != null)
-                oldEmployee.setEmail(newEmployee.getEmail());
-            if (newEmployee.getShopId() != null)
-                oldEmployee.setShopId(newEmployee.getShopId());
-            if (newEmployee.getShopId() != null)
-                oldEmployee.setShopId(newEmployee.getShopId());
+        if (newEmployee.getFirstName() != null)
+            oldEmployee.setFirstName(newEmployee.getFirstName());
+        if (newEmployee.getLastName() != null)
+            oldEmployee.setLastName(newEmployee.getLastName());
+        if (newEmployee.getPhone() != null)
+            oldEmployee.setPhone(newEmployee.getPhone());
+        if (newEmployee.getEmail() != null)
+            oldEmployee.setEmail(newEmployee.getEmail());
 
-            savedEmployee = employeeService.save(oldEmployee);
-        } catch (ProductNotFoundException exception) { // haven't found existing product record
-            savedEmployee = employeeService.save(newEmployee);
-        }
-        log.info("~~~ productsList: ");
+        savedEmployee = service.save(oldEmployee);
+
         return assembler.toResource(savedEmployee);
     }
 }

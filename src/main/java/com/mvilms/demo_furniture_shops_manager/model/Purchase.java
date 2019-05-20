@@ -12,10 +12,16 @@ import java.util.Date;
 public class Purchase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private Long employeeId;
-    private Long shopId;
-    private BigDecimal totalPrice;
+    private String id;
 
+    @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = false)
+    private Employee employee;
+
+    @ManyToOne
+    @JoinColumn(name = "shop_id", nullable = false)
+    private Shop shop;
+
+    private BigDecimal totalPrice;
     private Date registeredAt;
 }

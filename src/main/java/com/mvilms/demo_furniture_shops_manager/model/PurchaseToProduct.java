@@ -11,17 +11,24 @@ public class PurchaseToProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long purchaseId;
-    private Long productId;
+
+    @ManyToOne
+    @JoinColumn(name = "purchase_id", nullable = false)
+    private Purchase purchase;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
+
     private Long amount;
 
     public PurchaseToProduct(){
     }
 
-    public PurchaseToProduct(Long purchaseId, Long productId, Long amount){
+    public PurchaseToProduct(Purchase purchase, Product product, Long amount){
         this();
-        this.purchaseId = purchaseId;
-        this.productId = productId;
+        this.purchase = purchase;
+        this.product = product;
         this.amount = amount;
     }
 }

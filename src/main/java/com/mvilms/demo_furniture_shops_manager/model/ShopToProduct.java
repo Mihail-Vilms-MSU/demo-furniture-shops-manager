@@ -7,20 +7,28 @@ import javax.persistence.*;
 @Data
 @Entity
 @Table(name = "shop_to_product")
-public class ShopToProduct {
+public class ShopToProduct{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long shopId;
-    private Long productId;
+
+    @ManyToOne
+    @JoinColumn(name = "shop_id", nullable = false)
+    private Shop shop;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
+
     private Long amount;
 
     public ShopToProduct(){}
 
-    public ShopToProduct(Long shopId, Long productId, Long amount){
+    public ShopToProduct(Shop shop, Product product, Long amount){
         this();
-        this.shopId = shopId;
-        this.productId = productId;
+        this.shop = shop;
+        this.product = product;
         this.amount = amount;
     }
+
 }

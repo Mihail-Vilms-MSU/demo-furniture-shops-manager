@@ -2,16 +2,11 @@ package com.mvilms.demo_furniture_shops_manager.service;
 
 import com.mvilms.demo_furniture_shops_manager.data.ShopRepository;
 import com.mvilms.demo_furniture_shops_manager.data.ShopToProductRepository;
-import com.mvilms.demo_furniture_shops_manager.exceptions.ShopNotFoundException;
-import com.mvilms.demo_furniture_shops_manager.exceptions.ShortageOfProduct;
-import com.mvilms.demo_furniture_shops_manager.model.Employee;
 import com.mvilms.demo_furniture_shops_manager.model.Shop;
 import com.mvilms.demo_furniture_shops_manager.model.ShopToProduct;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,70 +15,83 @@ import java.util.Map;
 @Service
 @Slf4j
 public class ShopService {
-    @Autowired
-    ShopRepository shopRepository;
-    @Autowired
-    ShopToProductRepository shopToProductRepository;
-    @Autowired
-    EmployeeService employeeService;
+    private final ShopRepository repository;
+    private final ProductService productService;
+    private final ShopToProductRepository shopToProductRepository;
 
-    public Shop getById(Long id){ return shopRepository.getOne(id); }
-
-    public List<Shop> getAll(){
-        return shopRepository.findAll();
+    public ShopService(ShopRepository repository, EmployeeService service,
+                       ShopToProductRepository shopToProductRepository, ProductService productService) {
+        this.repository = repository;
+        this.shopToProductRepository = shopToProductRepository;
+        this.productService = productService;
     }
 
-    public Shop save(Shop newShop){
-        return shopRepository.save(newShop);
+    //////////////////////////////////////////////////////////////////////////
+
+    public Shop getById(String id){
+        return repository.getOne(id);
     }
 
-    public void delete(Long id) {
-        shopRepository.deleteById(id);
-    }
+    public List<Shop> getAll(){ return repository.findAll(); }
 
-    public Page<Employee> getEmployees(Long id){
-        return employeeService.getEmployeesByShopId(id);
-    }
+    public Shop save(Shop newShop){ return repository.save(newShop); }
+
+    public void delete(String id) { repository.deleteById(id); }
+
+    ///////////////////////////////////////////////////////////////////////////
 
     /**
-     * Finds out how many items of particular product there are at shop
+     * Finds how many items of particular product there are at shop storage
      *
      * @param shopId
      * @param productId
      * @return Available amount of product in shop
      */
-    public Long getAmountOfProduct(Long shopId, Long productId){
-        ShopToProduct shopToProduct = shopToProductRepository.findOneRecord(shopId, productId);
-        if (shopToProduct == null) return (long)0;
-        return shopToProduct.getAmount();
+    public ShopToProduct getAmountOfProduct(String shopId, String productId){
+        return shopToProductRepository.findOneRecord(shopId, productId);
+    }
+
+    /**
+     * Returns all entries with information on amount of products that corresponds to target shop
+     *
+     * @param shopId Shop record id we want to know amount of products in
+     * @param pageable
+     * @return
+     */
+    public Page getAmountOfProductsForShop(String shopId, Pageable pageable){
+        return shopToProductRepository.findByShopId(shopId, pageable);
+    }
+
+    /**
+     * Function adds defined amount of product to storage
+     *
+     * @param shopId
+     * @param targetAmounts Key - product id; Value - amount of product to add
+     * @return
+     */
+    public Boolean addProducts(String shopId, Map<String, Long> targetAmounts) {
+        targetAmounts.entrySet().stream()
+            .forEach(targetAmount -> {
+                String productId = targetAmount.getKey();
+                Long amount = targetAmount.getValue();
+                addAmountOfProduct(shopId,  productId, amount);
+            });
+
+        return  true;
     }
 
     /**
      *
      * @param shopId
      * @param productId
-     * @param targetAmount
+     * @param amount
      * @return
      */
-    public Boolean hasEnoughAmountOfProduct(Long shopId, Long productId, Long targetAmount){
-        Long amountOfProduct = getAmountOfProduct(shopId, productId);
-        if (amountOfProduct >= targetAmount) return true;
-        return false;
-    }
+    public Boolean addAmountOfProduct(String shopId, String productId, Long amount){
+        ShopToProduct shopToProduct = shopToProductRepository.findOneRecord(shopId, productId);
+        saveNewAmountOfProduct(shopId, productId, shopToProduct.getAmount() + amount);
 
-    /**
-     *
-     * @param shopId
-     * @param targetAmountOfProducts
-     * @return
-     */
-    public Boolean hasEnoughAmountOfProducts(Long shopId, Map<Long, Long> targetAmountOfProducts){
-        return targetAmountOfProducts.entrySet().stream()
-            .allMatch(amountOfProduct -> {
-                Long productId = amountOfProduct.getKey();
-                Long amount = amountOfProduct.getValue();
-                return hasEnoughAmountOfProduct(shopId, productId, amount);
-            });
+        return true;
     }
 
     /**
@@ -93,9 +101,9 @@ public class ShopService {
      * @param shopId
      * @param ProductId
      * @param newValue
-     * @return Saved record
+     * @return
      */
-    private void saveNewAmountOfProduct(Long shopId, Long ProductId, Long newValue){
+    private void saveNewAmountOfProduct(String shopId, String ProductId, Long newValue){
         ShopToProduct oldRecord = shopToProductRepository.findOneRecord(shopId, ProductId);
 
         if (oldRecord != null && newValue != 0) {
@@ -105,7 +113,8 @@ public class ShopService {
         }
 
         if (oldRecord == null && newValue != 0) {
-            shopToProductRepository.save(new ShopToProduct(shopId, ProductId, newValue));
+            shopToProductRepository
+                    .save(new ShopToProduct(this.getById(shopId), productService.getById(ProductId), newValue));
             return;
         }
 
@@ -117,12 +126,53 @@ public class ShopService {
         return;
     }
 
+
+
+    /*
+    public Page<Employee> getEmployees(Long id){
+        return employeeService.getEmployeesByShopId(id);
+    }
+    */
+
+    /**
+     *
+     * @param shopId
+     * @param productId
+     * @param targetAmount
+     * @return
+     */
+    /*
+    public Boolean hasEnoughAmountOfProduct(Long shopId, String productId, String targetAmount){
+        Long amountOfProduct = getAmountOfProduct(shopId, productId);
+        if (amountOfProduct >= targetAmount) return true;
+        return false;
+    }
+    */
+
+    /**
+     *
+     * @param shopId
+     * @param targetAmountOfProducts
+     * @return
+     */
+    /*
+    public Boolean hasEnoughAmountOfProducts(Long shopId, Map<Long, Long> targetAmountOfProducts){
+        return targetAmountOfProducts.entrySet().stream()
+            .allMatch(amountOfProduct -> {
+                Long productId = amountOfProduct.getKey();
+                Long amount = amountOfProduct.getValue();
+                return hasEnoughAmountOfProduct(shopId, productId, amount);
+            });
+    }
+    */
+
     /**
      *
      * @param shopId
      * @param targetAmounts
      * @return
      */
+    /*
     public Boolean withdrawProducts(Long shopId, Map<Long, Long> targetAmounts){
         Boolean isEnoughProducts = hasEnoughAmountOfProducts(shopId, targetAmounts);
         if (!isEnoughProducts) return false;
@@ -137,4 +187,5 @@ public class ShopService {
 
         return  true;
     }
+    */
 }

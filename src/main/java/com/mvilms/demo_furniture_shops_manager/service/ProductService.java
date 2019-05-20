@@ -5,6 +5,8 @@ import com.mvilms.demo_furniture_shops_manager.exceptions.ProductNotFoundExcepti
 import com.mvilms.demo_furniture_shops_manager.model.Product;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,20 +14,24 @@ import java.util.List;
 @Service
 @Slf4j
 public class ProductService {
-    @Autowired
-    ProductRepository productRepository;
+    private final ProductRepository repository;
+    public ProductService(ProductRepository repository) { this.repository = repository; }
 
-    public Product getById(Long id){ return productRepository.getOne(id); }
+    //////////////////////////////////////////////////////////////////////
 
-    public List<Product> getAll(){
-        return productRepository.findAll();
+    public Product getById(String id){ return repository.getOne(id); }
+
+    public Page getAll(Pageable pageable){
+        return repository.findAll(pageable);
     }
+
+    //////////////////////////////////////////////////////////////////////
 
     public Product save(Product newProduct){
-        return productRepository.save(newProduct);
+        return repository.save(newProduct);
     }
 
-    public void delete(Long id) {
-        productRepository.deleteById(id);
+    public void delete(String id) {
+        repository.deleteById(id);
     }
 }
