@@ -8,6 +8,8 @@ import org.springframework.hateoas.core.Relation;
 @Relation(value="shop", collectionRelation="shops")
 public class ShopResource extends ResourceSupport {
     @Getter
+    private String shopId;
+    @Getter
     private String name;
     @Getter
     private String city;
@@ -19,6 +21,7 @@ public class ShopResource extends ResourceSupport {
     private String phone;
 
     public ShopResource(Shop shop) {
+        this.shopId = shop.getId();
         this.name = shop.getName();
         this.city = shop.getCity();
         this.state = shop.getState();

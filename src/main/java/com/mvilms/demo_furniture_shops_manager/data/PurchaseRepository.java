@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RepositoryRestResource(collectionResourceRel = "purchases", path = "purchases")
-public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
+public interface PurchaseRepository extends JpaRepository<Purchase, String> {
 
     @Query("SELECT p FROM Purchase p")
     Page<Purchase> findAll(Pageable p);
@@ -45,4 +45,6 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
                                         @Param("top") BigDecimal top,
                                         Pageable p);
     */
+
+
 }

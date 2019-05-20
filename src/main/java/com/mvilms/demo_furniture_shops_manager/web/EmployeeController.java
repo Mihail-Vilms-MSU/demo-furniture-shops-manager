@@ -7,17 +7,12 @@ import com.mvilms.demo_furniture_shops_manager.resources.EmployeeResourceAssembl
 import com.mvilms.demo_furniture_shops_manager.service.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resources;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 // http://localhost:8080/employees/search/findByShopId?shopId=1
 
@@ -36,7 +31,7 @@ public class EmployeeController {
 
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/employees/{id}")
-    public EmployeeResource getById(@PathVariable Long id) {
+    public EmployeeResource getById(@PathVariable String id) {
         return assembler.toResource(service.getById(id));
     }
 
@@ -66,25 +61,21 @@ public class EmployeeController {
     }
 
     @PutMapping("/employees/{id}")
-    public EmployeeResource update(@RequestBody Employee newEmployee, @PathVariable Long id) {
+    public EmployeeResource update(@RequestBody Employee newEmployee, @PathVariable String id) {
         Employee savedEmployee;
 
-        try {
-            Employee oldEmployee = service.getById(id);
+        Employee oldEmployee = service.getById(id);
 
-            if (newEmployee.getFirstName() != null)
-                oldEmployee.setFirstName(newEmployee.getFirstName());
-            if (newEmployee.getLastName() != null)
-                oldEmployee.setLastName(newEmployee.getLastName());
-            if (newEmployee.getPhone() != null)
-                oldEmployee.setPhone(newEmployee.getPhone());
-            if (newEmployee.getEmail() != null)
-                oldEmployee.setEmail(newEmployee.getEmail());
+        if (newEmployee.getFirstName() != null)
+            oldEmployee.setFirstName(newEmployee.getFirstName());
+        if (newEmployee.getLastName() != null)
+            oldEmployee.setLastName(newEmployee.getLastName());
+        if (newEmployee.getPhone() != null)
+            oldEmployee.setPhone(newEmployee.getPhone());
+        if (newEmployee.getEmail() != null)
+            oldEmployee.setEmail(newEmployee.getEmail());
 
-            savedEmployee = service.save(oldEmployee);
-        } catch (ProductNotFoundException exception) { // haven't found existing product record
-            savedEmployee = service.save(newEmployee);
-        }
+        savedEmployee = service.save(oldEmployee);
 
         return assembler.toResource(savedEmployee);
     }

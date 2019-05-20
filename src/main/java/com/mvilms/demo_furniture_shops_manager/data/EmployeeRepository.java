@@ -9,9 +9,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import java.util.Optional;
+
 @CrossOrigin(origins = "http://localhost:4200")
 @RepositoryRestResource(collectionResourceRel = "employees", path = "employees")
-public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
     @Query("SELECT e FROM Employee e")
     Page<Employee> findAll(Pageable p);
@@ -24,5 +26,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     @Query("SELECT e FROM Employee e WHERE e.firstName LIKE %:name% OR e.lastName LIKE %:name%")
     Page<Employee> findByName(@Param("name") String name, Pageable p);
+
+    @Query("SELECT e FROM Employee e WHERE e.shop.id = :shop")
+    Page<Employee> findByShopId(@Param("shop") String shopId, Pageable p);
 
 }

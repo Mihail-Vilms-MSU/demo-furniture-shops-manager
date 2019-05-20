@@ -17,7 +17,7 @@ public class EmployeeService {
 
     //////////////////////////////////////////////////////////////////////
 
-    public Employee getById(Long id) {
+    public Employee getById(String id) {
         return repository.getOne(id);
     }
 
@@ -31,7 +31,7 @@ public class EmployeeService {
         return repository.save(newEmployee);
     }
 
-    public void delete(Long id) {
+    public void delete(String id) {
         repository.deleteById(id);
     }
 }

@@ -17,7 +17,7 @@ import java.math.BigDecimal;
  * http://localhost:8080/products/search/findWithPriceBetween?bottom=200&top=700&sort=price, desc
  */
 @RepositoryRestResource(collectionResourceRel = "products", path = "products")
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends JpaRepository<Product, String> {
 
     @Query("SELECT p FROM Product p")
     Page<Product> findAll(Pageable p);

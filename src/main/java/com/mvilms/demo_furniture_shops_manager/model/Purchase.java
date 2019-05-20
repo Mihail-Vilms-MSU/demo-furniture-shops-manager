@@ -12,7 +12,7 @@ import java.util.Date;
 public class Purchase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)

@@ -9,10 +9,11 @@ import java.util.Date;
 @Data
 @Entity
 @Table(name = "product")
+@Embeddable
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     private String name;
     private BigDecimal price;
     private String type;
@@ -23,8 +24,6 @@ public class Product {
 
     public Product(){
         this.isActive = true;
-        this.createdAt = new Date();
-        this.updatedAt = new Date();
     }
 
     public Product(String name, BigDecimal price, String type){

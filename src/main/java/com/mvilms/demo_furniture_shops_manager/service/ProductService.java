@@ -19,7 +19,7 @@ public class ProductService {
 
     //////////////////////////////////////////////////////////////////////
 
-    public Product getById(Long id){ return repository.getOne(id); }
+    public Product getById(String id){ return repository.getOne(id); }
 
     public Page getAll(Pageable pageable){
         return repository.findAll(pageable);
@@ -31,7 +31,7 @@ public class ProductService {
         return repository.save(newProduct);
     }
 
-    public void delete(Long id) {
+    public void delete(String id) {
         repository.deleteById(id);
     }
 }

@@ -1,6 +1,5 @@
 package com.mvilms.demo_furniture_shops_manager.web;
 
-import com.mvilms.demo_furniture_shops_manager.exceptions.ProductNotFoundException;
 import com.mvilms.demo_furniture_shops_manager.model.Product;
 import com.mvilms.demo_furniture_shops_manager.resources.ProductResource;
 import com.mvilms.demo_furniture_shops_manager.resources.ProductResourceAssembler;
@@ -12,7 +11,6 @@ import org.springframework.hateoas.PagedResources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +28,7 @@ public class ProductController {
 
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/products/{id}")
-    public ProductResource getById(@PathVariable Long id) {
+    public ProductResource getById(@PathVariable String id) {
         return assembler.toResource(service.getById(id));
     }
 
@@ -60,34 +58,28 @@ public class ProductController {
         return assembler.toResource(service.save(newProduct));
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @PutMapping("/products/{id}")
-    ProductResource update(@RequestBody Product newProduct, @PathVariable Long id) throws URISyntaxException {
-        Product savedProduct;
+    ProductResource update(@RequestBody Product newProduct, @PathVariable String id) {
+        Product oldProduct = service.getById(id);
 
-        // java 8 optional - isPresent()
+        if (newProduct.getName() != null)
+            oldProduct.setName(newProduct.getName());
+        if (newProduct.getDescription() != null)
+            oldProduct.setDescription(newProduct.getDescription());
+        if (newProduct.getPrice() != null)
+            oldProduct.setPrice(newProduct.getPrice());
+        if (newProduct.getType() != null)
+            oldProduct.setType(newProduct.getType());
 
-        try {
-            Product oldProduct = service.getById(id);
-
-            if (newProduct.getName() != null)
-                oldProduct.setName(newProduct.getName());
-            if (newProduct.getDescription() != null)
-                oldProduct.setDescription(newProduct.getDescription());
-            if (newProduct.getPrice() != null)
-                oldProduct.setPrice(newProduct.getPrice());
-            if (newProduct.getType() != null)
-                oldProduct.setType(newProduct.getType());
-
-            savedProduct = service.save(oldProduct);
-        } catch (ProductNotFoundException exception){ // haven't found existing product record
-        savedProduct = service.save(newProduct);
-    }
+        Product savedProduct = service.save(oldProduct);
 
         return assembler.toResource(savedProduct);
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @DeleteMapping("/products/{id}")
-    ResponseEntity<?> delete(@PathVariable Long id) {
+    ResponseEntity<?> delete(@PathVariable String id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }

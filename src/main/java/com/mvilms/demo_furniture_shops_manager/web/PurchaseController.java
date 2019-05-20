@@ -1,17 +1,17 @@
 package com.mvilms.demo_furniture_shops_manager.web;
 
 import com.mvilms.demo_furniture_shops_manager.model.Purchase;
+import com.mvilms.demo_furniture_shops_manager.model.PurchaseToProduct;
 import com.mvilms.demo_furniture_shops_manager.resources.PurchaseResource;
 import com.mvilms.demo_furniture_shops_manager.resources.PurchaseResourceAssembler;
 import com.mvilms.demo_furniture_shops_manager.service.PurchaseService;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.PagedResources;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +30,7 @@ public class PurchaseController {
 
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/purchases/{id}")
-    public PurchaseResource getById(@PathVariable Long id) {
+    public PurchaseResource getById(@PathVariable String id) {
         return assembler.toResource(service.getById(id));
     }
 
@@ -54,12 +54,24 @@ public class PurchaseController {
 
     //////////////////////////////////////////////////////////////////////////
 
-    /*
-    @GetMapping("/purchases/find")
-    public Resources<PurchaseResource> find() {
-
+    @CrossOrigin(origins = "http://localhost:4200")
+    @GetMapping("/purchases/{purchaseId}/products")
+    public List<PurchaseToProduct> getPurchasePositions(@PathVariable String purchaseId){
+        return service.getPurchasePositions(purchaseId);
     }
-    */
+
+    //#TODO
+    @CrossOrigin(origins = "http://localhost:4200")
+    @PostMapping("/purchases")
+    public ResponseEntity<?> savePurchase(@RequestBody String strJsonBody, @PathVariable String purchaseId){
+        JSONObject jsonBody = new JSONObject(strJsonBody);
+
+        Purchase newPurchase = (Purchase) jsonBody.get("purchase");
+
+
+
+        return ResponseEntity.noContent().build();
+    }
 
     /*
     @GetMapping("/products")

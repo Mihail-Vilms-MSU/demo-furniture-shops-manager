@@ -11,7 +11,7 @@ import java.util.Date;
 @Relation(value="product", collectionRelation="products")
 public class ProductResource extends ResourceSupport {
     @Getter
-    private Long productId;
+    private String productId;
     @Getter
     private String name;
     @Getter
@@ -23,9 +23,9 @@ public class ProductResource extends ResourceSupport {
     @Getter
     private boolean isActive;
     @Getter
-    private Date createdAt;
+    private Long createdAt;
     @Getter
-    private Date updatedAt;
+    private Long updatedAt;
 
     public ProductResource(Product product) {
         this.productId = product.getId();
@@ -34,7 +34,7 @@ public class ProductResource extends ResourceSupport {
         this.type = product.getType();
         this.description = product.getDescription();
         this.isActive = product.isActive();
-        this.createdAt = product.getCreatedAt();
-        this.updatedAt = product.getUpdatedAt();
+        this.createdAt = product.getCreatedAt().getTime();
+        this.updatedAt = product.getUpdatedAt().getTime();
     }
 }

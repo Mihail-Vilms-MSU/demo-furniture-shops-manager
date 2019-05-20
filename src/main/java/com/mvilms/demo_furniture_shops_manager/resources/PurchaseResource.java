@@ -13,7 +13,7 @@ import java.util.Date;
 @Relation(value="purchase", collectionRelation="purchases")
 public class PurchaseResource extends ResourceSupport {
     @Getter
-    private Long purchaseId;
+    private String purchaseId;
     @Getter
     private Employee employee;
     @Getter

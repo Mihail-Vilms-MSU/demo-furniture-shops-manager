@@ -9,7 +9,7 @@ import org.springframework.hateoas.core.Relation;
 @Relation(value="employee", collectionRelation="employees")
 public class EmployeeResource extends ResourceSupport {
     @Getter
-    private Long employeeId;
+    private String employeeId;
     @Getter
     private String firstName;
     @Getter
