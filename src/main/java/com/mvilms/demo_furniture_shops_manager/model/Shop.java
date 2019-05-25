@@ -22,8 +22,4 @@ public class Shop {
     private Date createdAt;
     private Date updatedAt;
 
-    public Shop(){
-        this.createdAt = new Date();
-        this.updatedAt = new Date();
-    }
 }
