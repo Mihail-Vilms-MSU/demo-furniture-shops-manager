@@ -1,5 +1,6 @@
 package com.mvilms.demo_furniture_shops_manager.web;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mvilms.demo_furniture_shops_manager.model.Purchase;
 import com.mvilms.demo_furniture_shops_manager.model.PurchaseToProduct;
 import com.mvilms.demo_furniture_shops_manager.resources.PurchaseResource;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
+@CrossOrigin(origins = "http://localhost:4200")
 public class PurchaseController {
     private final PurchaseResourceAssembler assembler;
     private final PurchaseService service;
@@ -28,22 +30,17 @@ public class PurchaseController {
 
     //////////////////////////////////////////////////////////////////////////
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/purchases/{id}")
     public PurchaseResource getById(@PathVariable String id) {
         return assembler.toResource(service.getById(id));
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/purchases")
     public PagedResources<PurchaseResource> getAll(Pageable pageable) {
         Page page = service.getAll(pageable);
 
-        List<PurchaseResource> purchaseListResources = (List) page.getContent()
-                .stream()
-                .map(purchase -> {
-                    return assembler.toResource((Purchase) purchase);
-                })
+        List<PurchaseResource> purchaseListResources = (List) page.getContent().stream()
+                .map(purchase -> assembler.toResource((Purchase) purchase))
                 .collect(Collectors.toList());
 
         PagedResources.PageMetadata pageMetadata =
@@ -52,47 +49,22 @@ public class PurchaseController {
         return new PagedResources <PurchaseResource> (purchaseListResources, pageMetadata);
     }
 
-    //////////////////////////////////////////////////////////////////////////
-
-    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/purchases/{purchaseId}/products")
     public List<PurchaseToProduct> getPurchasePositions(@PathVariable String purchaseId){
         return service.getPurchasePositions(purchaseId);
     }
 
-    //#TODO
-    @CrossOrigin(origins = "http://localhost:4200")
+    //////////////////////////////////////////////////////////////////////////
+
+
+
     @PostMapping("/purchases")
-    public ResponseEntity<?> savePurchase(@RequestBody String strJsonBody, @PathVariable String purchaseId){
-        JSONObject jsonBody = new JSONObject(strJsonBody);
+    public ResponseEntity<?> savePurchase(@RequestBody String strProductsMap,
+                                          @RequestParam String shopId,
+                                          @RequestParam String employeeId){
 
-        Purchase newPurchase = (Purchase) jsonBody.get("purchase");
-
-
-
+        JSONObject productsMap = new JSONObject(strProductsMap);
+        service.createPurchase(shopId, employeeId, productsMap);
         return ResponseEntity.noContent().build();
     }
-
-    /*
-    @GetMapping("/products")
-    Resources<ProductResource> getAll() {
-
-        List<ProductResource> productResourcesList =
-                assembler.toResources(productService.getAll());
-
-        Resources<ProductResource> productResources =
-                new Resources<ProductResource>(productResourcesList);
-
-        productResources
-                .add(linkTo(methodOn(ProductController.class).getAll()).withSelfRel());
-
-        return productResources;
-    }
-
-    @GetMapping("/purchases/{id}")
-    ProductResource getById(@PathVariable Long id) {
-        return assembler.toResource(productService.getById(id));
-    }
-    */
-
 }

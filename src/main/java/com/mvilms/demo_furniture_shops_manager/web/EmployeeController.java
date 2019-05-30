@@ -6,6 +6,8 @@ import com.mvilms.demo_furniture_shops_manager.resources.EmployeeResourceAssembl
 import com.mvilms.demo_furniture_shops_manager.service.EmployeeService;
 import com.mvilms.demo_furniture_shops_manager.service.ShopService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.PagedResources;
@@ -26,9 +28,9 @@ public class EmployeeController {
     private final ShopService shopService;
     private final EmployeeResourceAssembler assembler;
 
-    public EmployeeController(EmployeeService service, EmployeeResourceAssembler assembler, ShopService shopService) {
+    public EmployeeController(EmployeeService service, ShopService shopService) {
         this.service = service;
-        this.assembler = assembler;
+        this.assembler = new EmployeeResourceAssembler();
         this.shopService = shopService;
     }
 
@@ -45,9 +47,7 @@ public class EmployeeController {
 
         List<EmployeeResource> employeeListResources= (List) page.getContent()
                 .stream()
-                .map(employee -> {
-                    return assembler.toResource((Employee) employee);
-                })
+                .map(employee -> assembler.toResource((Employee) employee))
                 .collect(Collectors.toList());
 
         PagedResources.PageMetadata pageMetadata =
@@ -56,10 +56,17 @@ public class EmployeeController {
         return new PagedResources<EmployeeResource>(employeeListResources, pageMetadata);
     }
 
+    @GetMapping("shops/{shopId}/employees")
+    public List<EmployeeResource> getByShopId(@PathVariable String shopId){
+        return service.getByShopId(shopId).stream()
+                .map(employee -> new EmployeeResource(employee, false))
+                .collect(Collectors.toList());
+    }
+
     //////////////////////////////////////////////////////////////////////////
 
     @PostMapping("/employees")
-    public ResponseEntity<?> addNew(@RequestBody Employee newEmployee, @RequestParam String shopId) throws URISyntaxException {
+    public ResponseEntity<?> addNew(@RequestBody Employee newEmployee, @RequestParam String shopId) {
         newEmployee.setShop(shopService.getById(shopId));
         service.save(newEmployee);
 
@@ -85,4 +92,5 @@ public class EmployeeController {
 
         return assembler.toResource(savedEmployee);
     }
+
 }
