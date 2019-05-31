@@ -30,6 +30,11 @@ public class EmployeeResource extends ResourceSupport {
         this.phone = employee.getPhone();
         this.email = employee.getEmail();
         this.role = employee.getRole();
-        this.shop = employee.getShop();
     }
+
+    public EmployeeResource(Employee employee, boolean needShopInfo) {
+        this(employee);
+        if (needShopInfo) this.shop = employee.getShop();
+    }
+
 }

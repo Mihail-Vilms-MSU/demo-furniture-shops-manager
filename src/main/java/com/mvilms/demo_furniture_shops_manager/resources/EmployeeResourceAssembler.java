@@ -18,7 +18,7 @@ public class EmployeeResourceAssembler extends ResourceAssemblerSupport<Employee
 
     @Override
     public EmployeeResource toResource(Employee employee) {
-        EmployeeResource employeeResource = new EmployeeResource(employee);
+        EmployeeResource employeeResource = new EmployeeResource(employee, true);
 
         employeeResource.add(linkTo(methodOn(EmployeeController.class).getById(employee.getId())).withSelfRel());
 

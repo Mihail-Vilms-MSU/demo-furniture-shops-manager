@@ -44,13 +44,11 @@ public class ShopController {
 
     /////////////////////////////////////////////////////////////////////
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/shops/{id}")
     public ShopResource getById(@PathVariable String id) {
         return assembler.toResource(service.getById(id));
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/shops")
     public Resources<ShopResource> getAll() {
         List<Shop> shops = service.getAll();
@@ -69,13 +67,11 @@ public class ShopController {
 
     /////////////////////////////////////////////////////////////////////
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/shops")
     public ShopResource addNew(@RequestBody Shop newShop) {
         return assembler.toResource(service.save(newShop));
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @PutMapping("/shops/{id}")
     public ShopResource update(@RequestBody Shop newShop, @PathVariable String id) throws URISyntaxException {
         Shop savedShop;
@@ -94,29 +90,24 @@ public class ShopController {
             oldShop.setPhone(newShop.getPhone());
 
         savedShop = service.save(oldShop);
-
         return assembler.toResource(savedShop);
     }
 
     /////////////////////////////////////////////////////////////////////
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/shops/{shop_id}/products/{product_id}")
     public AmountResource getAmountOfProduct(@PathVariable String shop_id, @PathVariable String product_id) {
         ShopToProduct amountEntry = service.getAmountOfProduct(shop_id, product_id);
         return amountAssembler.toResource(amountEntry);
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/shops/{shop_id}/products")
     Resources<AmountResource> getProductsInShop(@PathVariable String shop_id, Pageable pageable) {
         Page page = service.getAmountOfProductsForShop(shop_id, pageable);
 
         List<AmountResource> amountResourcesList = (List) page.getContent()
             .stream()
-            .map(amountEntry -> {
-                return amountAssembler.toResource((ShopToProduct) amountEntry);
-            })
+            .map(amountEntry -> amountAssembler.toResource((ShopToProduct) amountEntry))
             .collect(Collectors.toList());
 
         PagedResources.PageMetadata pageMetadata =
@@ -125,7 +116,6 @@ public class ShopController {
         return new PagedResources<>(amountResourcesList, pageMetadata);
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/shops/{shopId}/products")
     ResponseEntity<?> addAmountOfProducts(@RequestBody String stringAmountJson, @PathVariable String shopId) {
         JSONObject amountJson = new JSONObject(stringAmountJson);
@@ -135,17 +125,13 @@ public class ShopController {
             .forEach(productId -> {
                 productAmountMap.put(productId, amountJson.getLong(productId));
             });
-
         service.addProducts(shopId, productAmountMap);
-
         return ResponseEntity.noContent().build();
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @PutMapping("/shops/{shopId}/products/{productId}")
     ResponseEntity<?> addAmountOfProduct(@RequestBody Long amount, @PathVariable String shopId, @PathVariable String productId) {
         service.addAmountOfProduct(shopId, productId, amount);
-
         return ResponseEntity.noContent().build();
     }
 
