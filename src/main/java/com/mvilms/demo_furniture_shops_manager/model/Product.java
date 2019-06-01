@@ -14,20 +14,29 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
+
     private String name;
     private BigDecimal price;
     private String type;
     private String description;
+
     private boolean isActive;
     private Date createdAt;
     private Date updatedAt;
 
-    public Product(){
-        this.isActive = true;
+    public Product(Boolean isActive){
+        this.isActive = isActive;
     }
 
     public Product(String name, BigDecimal price, String type){
-        this();
+        this(true);
+        this.name = name;
+        this.price = price;
+        this.type = type;
+    }
+
+    public Product(String name, BigDecimal price, String type, Boolean isActive){
+        this(isActive);
         this.name = name;
         this.price = price;
         this.type = type;
