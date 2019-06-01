@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class ProductController {
     private final ProductService service;
     private final ProductResourceAssembler assembler;
+
     public ProductController(ProductService service, ProductResourceAssembler assembler) {
         this.service = service;
         this.assembler = assembler;
@@ -39,9 +40,7 @@ public class ProductController {
 
         List<ProductResource> productResourceList = (List) page.getContent()
             .stream()
-            .map(product -> {
-                return assembler.toResource((Product) product);
-            })
+            .map(product -> assembler.toResource((Product) product))
             .collect(Collectors.toList());
 
         PagedResources.PageMetadata pageMetadata =
