@@ -1,0 +1,17 @@
+## Ignore temporary files, build results
+
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# Temporary files
+target/
+
+#IntelliJ files
+**/*.iml
+**/.idea
+
+*.ini
