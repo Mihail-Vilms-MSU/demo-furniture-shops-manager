@@ -24,7 +24,10 @@ public class Product {
     private Date createdAt;
     private Date updatedAt;
 
+    public Product(){};
+
     public Product(Boolean isActive){
+        this();
         this.isActive = isActive;
     }
 
