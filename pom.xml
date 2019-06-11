@@ -10,6 +10,7 @@
     </parent>
     <groupId>com.mvilms</groupId>
     <artifactId>demo-furniture-shops-manager</artifactId>
+    <packaging>jar</packaging>
     <version>0.0.1-SNAPSHOT</version>
     <name>demo-furniture-shops-manager</name>
     <description>Demo project for Spring Boot</description>
