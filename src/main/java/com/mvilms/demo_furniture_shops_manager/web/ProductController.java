@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
+@CrossOrigin
 public class ProductController {
     private final ProductService service;
     private final ProductResourceAssembler assembler;
@@ -27,13 +28,11 @@ public class ProductController {
 
     //////////////////////////////////////////////////////////////////////
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/products/{id}")
     public ProductResource getById(@PathVariable String id) {
         return assembler.toResource(service.getById(id));
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/products")
     public PagedResources<ProductResource> getAll(Pageable pageable) {
         Page page = service.getAll(pageable);
@@ -51,13 +50,11 @@ public class ProductController {
 
     //////////////////////////////////////////////////////////////////////
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/products")
     ProductResource addNew(@RequestBody Product newProduct) {
         return assembler.toResource(service.save(newProduct));
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @PutMapping("/products/{id}")
     ProductResource update(@RequestBody Product newProduct, @PathVariable String id) {
         Product oldProduct = service.getById(id);
@@ -76,7 +73,6 @@ public class ProductController {
         return assembler.toResource(savedProduct);
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @DeleteMapping("/products/{id}")
     ResponseEntity<?> delete(@PathVariable String id) {
         service.delete(id);

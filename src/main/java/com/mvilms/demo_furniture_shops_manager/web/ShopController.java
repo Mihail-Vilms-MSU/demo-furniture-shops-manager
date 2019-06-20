@@ -31,7 +31,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 @Slf4j
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin
 public class ShopController {
     private final ShopService service;
     private final ShopResourceAssembler assembler;
