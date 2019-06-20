@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin
 public class PurchaseController {
     private final PurchaseResourceAssembler assembler;
     private final PurchaseService service;
