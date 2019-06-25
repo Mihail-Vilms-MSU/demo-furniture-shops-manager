@@ -1,11 +1,9 @@
 package com.mvilms.demo_furniture_shops_manager.web;
 
+import com.mvilms.demo_furniture_shops_manager.model.Product;
 import com.mvilms.demo_furniture_shops_manager.model.Shop;
 import com.mvilms.demo_furniture_shops_manager.model.ShopToProduct;
-import com.mvilms.demo_furniture_shops_manager.resources.AmountResource;
-import com.mvilms.demo_furniture_shops_manager.resources.AmountResourceAssembler;
-import com.mvilms.demo_furniture_shops_manager.resources.ShopResource;
-import com.mvilms.demo_furniture_shops_manager.resources.ShopResourceAssembler;
+import com.mvilms.demo_furniture_shops_manager.resources.*;
 import com.mvilms.demo_furniture_shops_manager.service.ShopService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -42,30 +40,35 @@ public class ShopController {
         this.amountAssembler = amountAssembler;
     }
 
-    /////////////////////////////////////////////////////////////////////
-
     @GetMapping("/shops/{id}")
     public ShopResource getById(@PathVariable String id) {
         return assembler.toResource(service.getById(id));
     }
 
     @GetMapping("/shops")
-    public Resources<ShopResource> getAll() {
-        List<Shop> shops = service.getAll();
+    public Resources<ShopResource> getAll(
+            @RequestParam(value ="searchInput", required = false, defaultValue = "") String searchInput,
+            Pageable pageable
+    ) {
+        Page page;
+        if (searchInput.equals("")){
+            page = service.getAll(pageable);
+        }
+        page = service.findByAllFields(searchInput, pageable);
 
-        List<ShopResource> shopResourceList =
-                assembler.toResources(service.getAll());
-
-        Resources<ShopResource> shopResources =
-                new Resources<ShopResource>(shopResourceList);
-
-        shopResources
-                .add(linkTo(methodOn(ShopController.class).getAll()).withSelfRel());
-
-        return shopResources;
+        return PagedResourcesBuilder.<Shop, ShopResource>build(page, assembler);
     }
 
-    /////////////////////////////////////////////////////////////////////
+    @GetMapping("/shops/advancedSearch")
+    public Resources<ShopResource> advancedSearch(
+            @RequestParam(value = "name", required = false, defaultValue = "") String name,
+            @RequestParam(value = "state", required = false, defaultValue = "") String state,
+            @RequestParam(value = "city", required = false, defaultValue = "") String city,
+            Pageable pageable
+    ) {
+        Page page = service.advancedSearch(name, state, city, pageable);
+        return PagedResourcesBuilder.<Shop, ShopResource>build(page, assembler);
+    }
 
     @PostMapping("/shops")
     public ShopResource addNew(@RequestBody Shop newShop) {
@@ -133,6 +136,17 @@ public class ShopController {
     ResponseEntity<?> addAmountOfProduct(@RequestBody Long amount, @PathVariable String shopId, @PathVariable String productId) {
         service.addAmountOfProduct(shopId, productId, amount);
         return ResponseEntity.noContent().build();
+    }
+
+
+    @GetMapping("/shops/search-params/state")
+    List<String> getListOfStates(){
+        return service.getListOfStates();
+    }
+
+    @GetMapping("/shops/search-params/city")
+    List<String> getListOfCities(@RequestParam(value ="state", required = false, defaultValue = "") String state){
+        return service.getListOfCities(state);
     }
 
 }

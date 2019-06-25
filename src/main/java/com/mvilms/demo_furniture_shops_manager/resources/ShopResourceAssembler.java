@@ -25,7 +25,7 @@ public class ShopResourceAssembler extends ResourceAssemblerSupport<Shop, ShopRe
 
         shopResource.add(linkTo(methodOn(ShopController.class).getById(shop.getId())).withSelfRel());
 
-        shopResource.add(linkTo(methodOn(ShopController.class).getAll()).withRel("shops"));
+        // shopResource.add(linkTo(methodOn(ShopController.class).getAll()).withRel("shops"));
         /*
         shopResource
             .add(linkTo(methodOn(EmployeeRepository.class).findByShopId(shop.getId(), PageRequest.of(0, 5, Sort.by("name").descending())))

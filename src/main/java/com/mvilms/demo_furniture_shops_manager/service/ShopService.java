@@ -32,7 +32,15 @@ public class ShopService {
         return repository.getOne(id);
     }
 
-    public List<Shop> getAll(){ return repository.findAll(); }
+    public Page<Shop> getAll(Pageable pageable){ return repository.findAll(pageable); }
+
+    public Page<Shop> findByAllFields(String searchInput, Pageable pageable){
+        return repository.findByAllFields(searchInput, pageable);
+    }
+
+    public Page<Shop> advancedSearch(String name, String state, String city, Pageable pageable){
+        return repository.advancedSearch(name, state, city, pageable);
+    }
 
     public Shop save(Shop newShop){ return repository.save(newShop); }
 
@@ -126,13 +134,23 @@ public class ShopService {
         return;
     }
 
-
-
-    /*
-    public Page<Employee> getEmployees(Long id){
-        return employeeService.getEmployeesByShopId(id);
+    /**
+     * Returns list of all states shops are located at
+     *
+     * @return List of states
+     */
+    public List<String> getListOfStates(){
+        return repository.getListOfStates();
     }
-    */
+
+    /**
+     * Returns list of all cities shops are located at
+     *
+     * @return List of cities
+     */
+    public List<String> getListOfCities(String state){
+        return repository.getListOfCities(state);
+    }
 
     /**
      *
