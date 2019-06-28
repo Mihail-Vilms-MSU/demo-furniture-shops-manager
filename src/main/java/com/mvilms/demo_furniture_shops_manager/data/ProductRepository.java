@@ -2,6 +2,7 @@ package com.mvilms.demo_furniture_shops_manager.data;
 
 import com.mvilms.demo_furniture_shops_manager.model.Product;
 
+import com.mvilms.demo_furniture_shops_manager.model.Shop;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -41,4 +42,14 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
     @Query("SELECT MIN(price) FROM Product p")
     BigDecimal findMinPrice();
+
+
+    @Query("SELECT p from Product p WHERE" +
+            " p.id LIKE %:searchInput% OR" +
+            " p.name LIKE %:searchInput% OR" +
+            " p.type LIKE %:searchInput% OR" +
+            " p.description LIKE %:searchInput%"
+    )
+    Page<Product> findByAllFields(@Param("searchInput") String searchInput, Pageable p);
+
 }

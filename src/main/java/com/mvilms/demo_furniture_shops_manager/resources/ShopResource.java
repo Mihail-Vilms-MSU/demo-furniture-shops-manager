@@ -19,6 +19,10 @@ public class ShopResource extends ResourceSupport {
     private String address;
     @Getter
     private String phone;
+    @Getter
+    private Long createdAt;
+    @Getter
+    private Long updatedAt;
 
     public ShopResource(Shop shop) {
         this.shopId = shop.getId();
@@ -27,5 +31,8 @@ public class ShopResource extends ResourceSupport {
         this.state = shop.getState();
         this.address = shop.getAddress();
         this.phone = shop.getPhone();
+
+        this.createdAt = (shop.getCreatedAt() != null) ? shop.getCreatedAt().getTime() : 0;
+        this.updatedAt = (shop.getUpdatedAt() != null) ? shop.getUpdatedAt().getTime() : 0;
     }
 }
