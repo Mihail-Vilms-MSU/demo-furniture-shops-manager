@@ -38,7 +38,6 @@ public class ProductService {
         return repository.findByPrice(minPrice, maxPrice, pageable);
     }
 
-
     public Product save(Product newProduct){
         return repository.save(newProduct);
     }

@@ -1,6 +1,8 @@
 package com.mvilms.demo_furniture_shops_manager.model;
 
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -19,7 +21,19 @@ public class Shop {
     private String address;
     private String phone;
 
+    @CreationTimestamp
     private Date createdAt;
+    @UpdateTimestamp
     private Date updatedAt;
 
+    public Shop(){};
+
+    public Shop(String name, String city, String state, String address, String phone){
+        this();
+        this.name = name;
+        this.city = city;
+        this.state = state;
+        this.address = address;
+        this.phone = phone;
+    }
 }
