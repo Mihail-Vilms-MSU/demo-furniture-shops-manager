@@ -21,7 +21,11 @@ public class EmployeeResource extends ResourceSupport {
     @Getter
     private String role;
     @Getter
-    private Shop shop;
+    private ShopResource shop;
+    @Getter
+    private Long createdAt;
+    @Getter
+    private Long updatedAt;
 
     public EmployeeResource(Employee employee) {
         this.employeeId = employee.getId();
@@ -30,11 +34,17 @@ public class EmployeeResource extends ResourceSupport {
         this.phone = employee.getPhone();
         this.email = employee.getEmail();
         this.role = employee.getRole();
+
+        this.createdAt = (employee.getCreatedAt() != null) ? employee.getCreatedAt().getTime() : 0;
+        this.updatedAt = (employee.getUpdatedAt() != null) ? employee.getUpdatedAt().getTime() : 0;
     }
 
     public EmployeeResource(Employee employee, boolean needShopInfo) {
         this(employee);
-        if (needShopInfo) this.shop = employee.getShop();
+
+        if (needShopInfo) {
+            this.shop = new ShopResource(employee.getShop());
+        }
     }
 
 }

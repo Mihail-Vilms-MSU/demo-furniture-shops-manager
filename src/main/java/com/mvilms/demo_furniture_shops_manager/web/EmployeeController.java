@@ -6,15 +6,12 @@ import com.mvilms.demo_furniture_shops_manager.resources.EmployeeResourceAssembl
 import com.mvilms.demo_furniture_shops_manager.service.EmployeeService;
 import com.mvilms.demo_furniture_shops_manager.service.ShopService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,7 +71,12 @@ public class EmployeeController {
     }
 
     @PutMapping("/employees/{id}")
-    public EmployeeResource update(@RequestBody Employee newEmployee, @PathVariable String id) {
+    public EmployeeResource update(
+            @RequestBody Employee newEmployee,
+            @PathVariable String id,
+            @RequestParam(value ="shopId", required = false, defaultValue = "") String shopId
+    ) {
+        System.out.println("newEmployee: " + newEmployee);
         Employee savedEmployee;
 
         Employee oldEmployee = service.getById(id);
@@ -83,10 +85,17 @@ public class EmployeeController {
             oldEmployee.setFirstName(newEmployee.getFirstName());
         if (newEmployee.getLastName() != null)
             oldEmployee.setLastName(newEmployee.getLastName());
+        if (newEmployee.getRole() != null)
+            oldEmployee.setLastName(newEmployee.getRole());
+        if (newEmployee.getLastName() != null)
+            oldEmployee.setLastName(newEmployee.getLastName());
         if (newEmployee.getPhone() != null)
             oldEmployee.setPhone(newEmployee.getPhone());
         if (newEmployee.getEmail() != null)
             oldEmployee.setEmail(newEmployee.getEmail());
+
+        if (!shopId.equals(""))
+            oldEmployee.setShop(shopService.getById(shopId));
 
         savedEmployee = service.save(oldEmployee);
 
