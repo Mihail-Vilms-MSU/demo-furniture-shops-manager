@@ -10,9 +10,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
-import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin
 @RepositoryRestResource(collectionResourceRel = "employees", path = "employees")
 public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
@@ -31,4 +30,26 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
     @Query("SELECT e FROM Employee e WHERE e.shop.id = :shopId")
     List<Employee> findByShopId(@Param("shopId") String shopId);
 
+    @Query("SELECT e from Employee e WHERE" +
+            " e.id LIKE %:searchInput% OR" +
+            " e.firstName LIKE %:searchInput% OR" +
+            " e.lastName LIKE %:searchInput% OR" +
+            " e.role LIKE %:searchInput% OR" +
+            " e.email LIKE %:searchInput%"
+    )
+    Page<Employee> liveSearch(@Param("searchInput") String searchInput, Pageable p);
+
+    @Query("SELECT e from Employee e WHERE" +
+            " (:firstName='' or e.firstName LIKE %:firstName%) AND" +
+            " (:lastName='' or e.lastName LIKE %:lastName%) AND" +
+            " (:shopId='' or e.shop.id LIKE %:shopId%) AND" +
+            " (:role='' or e.role LIKE %:role%)"
+    )
+    Page<Employee> advancedSearch(
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("shopId") String shopId,
+            @Param("role") String role,
+            Pageable p
+    );
 }

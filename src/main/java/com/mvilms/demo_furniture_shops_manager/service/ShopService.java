@@ -35,7 +35,7 @@ public class ShopService {
     public Page<Shop> getAll(Pageable pageable){ return repository.findAll(pageable); }
 
     public Page<Shop> findByAllFields(String searchInput, Pageable pageable){
-        return repository.findByAllFields(searchInput, pageable);
+        return repository.liveSearch(searchInput, pageable);
     }
 
     public Page<Shop> advancedSearch(String name, String state, String city, Pageable pageable){
