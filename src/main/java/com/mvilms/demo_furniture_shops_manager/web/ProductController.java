@@ -52,12 +52,11 @@ public class ProductController {
     ) {
         Page page;
         if(searchInput.equals("")){
-            System.out.println("in 1111111");
             page = service.getAll(pageable);
         } else {
             page = service.liveSearch(searchInput, pageable);
         }
-        System.out.println("in 222222");
+
         return PagedResourcesBuilder.<Product, ProductResource>build(page, assembler);
     }
 
