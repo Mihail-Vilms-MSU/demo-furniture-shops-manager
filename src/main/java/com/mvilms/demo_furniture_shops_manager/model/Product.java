@@ -1,6 +1,8 @@
 package com.mvilms.demo_furniture_shops_manager.model;
 
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -21,7 +23,10 @@ public class Product {
     private String description;
 
     private boolean isActive;
+
+    @CreationTimestamp
     private Date createdAt;
+    @UpdateTimestamp
     private Date updatedAt;
 
     public Product(){};

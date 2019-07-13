@@ -3,7 +3,6 @@ package com.mvilms.demo_furniture_shops_manager.service;
 import com.mvilms.demo_furniture_shops_manager.data.ProductRepository;
 import com.mvilms.demo_furniture_shops_manager.model.Product;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +16,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 // #READ https://www.baeldung.com/spring-boot-testing
 
@@ -60,16 +57,16 @@ public class ProductServiceTest {
 
     }
 
-    @Test
-    public void findByName_returns2Records(){
-        assertThat(productService.findByName("Sofa", PageRequest.of(0, 10)).getContent().size()).isEqualTo(2);
-    }
-
-    @Test
-    public void findByName_returns3Records(){
-        List<Product> productsList = productService.findByType("Chair", PageRequest.of(0, 10)).getContent();
-        assertThat(productsList.size()).isEqualTo(3);
-        assertThat(productsList.get(0).getType()).isEqualTo("Chair");
-    }
+//    @Test
+//    public void findByName_returns2Records(){
+//        assertThat(productService.findByName("Sofa", PageRequest.of(0, 10)).getContent().size()).isEqualTo(2);
+//    }
+//
+//    @Test
+//    public void findByName_returns3Records(){
+//        List<Product> productsList = productService.findByType("Chair", PageRequest.of(0, 10)).getContent();
+//        assertThat(productsList.size()).isEqualTo(3);
+//        assertThat(productsList.get(0).getType()).isEqualTo("Chair");
+//    }
 
 }

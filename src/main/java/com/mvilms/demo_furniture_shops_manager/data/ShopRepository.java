@@ -7,9 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
 
+@CrossOrigin
 @RepositoryRestResource(collectionResourceRel = "shops", path = "shops")
 public interface ShopRepository extends JpaRepository<Shop, String> {
 
@@ -43,7 +45,7 @@ public interface ShopRepository extends JpaRepository<Shop, String> {
         " s.city LIKE %:searchInput% OR " +
         " s.phone LIKE %:searchInput%"
     )
-    Page<Shop> findByAllFields(@Param("searchInput") String searchInput, Pageable p);
+    Page<Shop> liveSearch(@Param("searchInput") String searchInput, Pageable p);
 
     @Query("SELECT s from Shop s WHERE" +
             " (:name='' or s.name LIKE %:name%) and" +

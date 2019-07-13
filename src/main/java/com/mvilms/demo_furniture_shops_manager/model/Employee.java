@@ -1,10 +1,11 @@
 package com.mvilms.demo_furniture_shops_manager.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Data
 @Entity
@@ -18,6 +19,11 @@ public class Employee {
     private String role;
     private String phone;
     private String email;
+
+    @CreationTimestamp
+    private Date createdAt;
+    @UpdateTimestamp
+    private Date updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "shop_id")

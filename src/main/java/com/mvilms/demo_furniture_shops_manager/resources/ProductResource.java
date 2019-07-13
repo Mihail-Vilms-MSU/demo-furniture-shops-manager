@@ -34,7 +34,8 @@ public class ProductResource extends ResourceSupport {
         this.type = product.getType();
         this.description = product.getDescription();
         this.isActive = product.isActive();
-        this.createdAt = product.getCreatedAt().getTime();
-        this.updatedAt = product.getUpdatedAt().getTime();
+
+        this.createdAt = (product.getCreatedAt() != null) ? product.getCreatedAt().getTime() : 0;
+        this.updatedAt = (product.getUpdatedAt() != null) ? product.getUpdatedAt().getTime() : 0;
     }
 }
