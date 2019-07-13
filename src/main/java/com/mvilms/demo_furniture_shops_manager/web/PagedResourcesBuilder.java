@@ -11,12 +11,14 @@ import java.util.stream.Collectors;
 public class PagedResourcesBuilder {
 
     /**
+     * Method transforms list of entries to list of resources and then to page of resources
+     * Page<Product> -> List<Product> -> List<ProductResource> -> Page<ProductResource>
      *
-     * @param page
-     * @param assembler
-     * @param <T>
-     * @param <R>
-     * @return
+     * @param page Page with records
+     * @param assembler Resource assembler class capable to transform record into resource
+     * @param <T> Type of record
+     * @param <R> Type of resource
+     * @return Page with resources
      */
     public static <T, R extends ResourceSupport> PagedResources<R> build(Page page, ResourceAssemblerSupport<T, R> assembler){
         List<R> resourceList = (List)page.getContent()

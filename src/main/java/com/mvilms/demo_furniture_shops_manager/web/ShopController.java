@@ -40,11 +40,28 @@ public class ShopController {
         this.amountAssembler = amountAssembler;
     }
 
+    /**
+     * Returns shop record by its id
+     *
+     * @param id Employee record Id
+     * @return Employee record
+     */
     @GetMapping("/shops/{id}")
     public ShopResource getById(@PathVariable String id) {
         return assembler.toResource(service.getById(id));
     }
 
+
+
+    /**
+     * Takes no arguments or one argument - string in order to search records by multiple fields
+     * In first case method returns all records in database in table "employees"
+     * In second case method returns records that contains input value in one of theirs fields
+     *
+     * @param searchInput String to search
+     * @param pageable Pagination configuration parameters
+     * @return Page with search results
+     */
     @GetMapping("/shops")
     public Resources<ShopResource> getAll(
             @RequestParam(value ="searchInput", required = false, defaultValue = "") String searchInput,

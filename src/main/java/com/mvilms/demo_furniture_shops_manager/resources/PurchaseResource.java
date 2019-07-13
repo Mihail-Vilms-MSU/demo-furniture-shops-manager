@@ -1,8 +1,6 @@
 package com.mvilms.demo_furniture_shops_manager.resources;
 
-import com.mvilms.demo_furniture_shops_manager.model.Employee;
 import com.mvilms.demo_furniture_shops_manager.model.Purchase;
-import com.mvilms.demo_furniture_shops_manager.model.Shop;
 import lombok.Getter;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.core.Relation;
@@ -15,9 +13,9 @@ public class PurchaseResource extends ResourceSupport {
     @Getter
     private String purchaseId;
     @Getter
-    private Employee employee;
+    private EmployeeResource employee;
     @Getter
-    private Shop shop;
+    private ShopResource shop;
     @Getter
     private BigDecimal price;
     @Getter
@@ -25,8 +23,9 @@ public class PurchaseResource extends ResourceSupport {
 
     public PurchaseResource(Purchase purchase){
         this.purchaseId = purchase.getId();
-        this.employee = purchase.getEmployee();
-        this.shop = purchase.getShop();
+
+        this.shop = new ShopResource(purchase.getShop());
+        this.employee = new EmployeeResource(purchase.getEmployee());
 
         this.price = purchase.getTotalPrice();
         this.createdAt = purchase.getRegisteredAt();

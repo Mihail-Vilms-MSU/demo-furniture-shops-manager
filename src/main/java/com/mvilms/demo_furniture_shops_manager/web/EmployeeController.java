@@ -11,6 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @Slf4j
 @CrossOrigin
@@ -142,15 +145,17 @@ public class EmployeeController {
     }
 
 
-//    /**
-//     *
-//     * @param shopId
-//     * @return
-//     */
-//    @GetMapping("shops/{shopId}/employees")
-//    public List<EmployeeResource> getByShopId(@PathVariable String shopId){
-//        return service.getByShopId(shopId).stream()
-//                .map(employee -> new EmployeeResource(employee, false))
-//                .collect(Collectors.toList());
-//    }
+
+    /**
+     * Retrieves all employee records linked to specific shops
+     *
+     * @param shopId Id of shop record
+     * @return List of Employee records
+     */
+    @GetMapping("shops/{shopId}/employees")
+    public List<EmployeeResource> getByShopId(@PathVariable String shopId){
+        return service.getByShopId(shopId).stream()
+                .map(employee -> new EmployeeResource(employee, false))
+                .collect(Collectors.toList());
+    }
 }
