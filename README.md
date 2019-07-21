@@ -10,6 +10,8 @@ You can check functionality of this project here: https://mvilms-demo-shops-mana
 
 Thank you for checking out this repo!
 
+This project has [separate front-end application built on Angular 2](https://github.com/Mihail-Vilms-MSU/demo-furniture-shops-manager-ui)
+
 ## Requirements
 
 For building and running the application you need:
