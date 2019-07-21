@@ -1,12 +1,16 @@
 # Spring boot demonstrational project 
 
-This project serves for demonstration purposes only; To introduce level of skills I have so far, I have prepared this demostrational project. 
+This project serves for demonstration purposes only. I have prepared this demostrational project to introduce level of skills I have so far.
 
 Built by [Mikhail Vilms](https://www.linkedin.com/in/mikhail-vilms/)
+
 You can check functionality of this project here: https://mvilms-demo-shops-manager.herokuapp.com
+
 (functionality works correctly, but it can takes 20-30 seconds for heroku to run its dyno)
 
 Thank you for checking out this repo!
+
+This project has [separate front-end application built on Angular 2](https://github.com/Mihail-Vilms-MSU/demo-furniture-shops-manager-ui)
 
 ## Requirements
 
