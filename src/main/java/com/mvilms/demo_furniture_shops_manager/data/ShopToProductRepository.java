@@ -10,22 +10,19 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import java.util.List;
+
 @RepositoryRestResource(collectionResourceRel = "productReserve", path = "productReserves")
 public interface ShopToProductRepository extends JpaRepository<ShopToProduct, Long> {
 
     @Query("SELECT p FROM ShopToProduct p")
     Page<ShopToProduct> findAll(Pageable p);
 
-    /*
-    @Query("SELECT p FROM ShopToProduct p WHERE p.shopId = :shopId")
-    Page<ShopToProduct> findByShopId(@Param("shopId") String shopId, Pageable p);
-
-    @Query("SELECT p FROM ShopToProduct p WHERE p.productId = :productId")
-    Page<ShopToProduct> findByProductId(@Param("productId") Long productId, Pageable p);
-    */
-
     @Query("SELECT p FROM ShopToProduct p WHERE p.shop.id = :shopId")
-    Page<ShopToProduct> findByShopId(@Param("shopId") String shopId, Pageable p);
+    List<ShopToProduct> findByShopId(@Param("shopId") String shopId);
+
+    @Query("SELECT p FROM ShopToProduct p WHERE p.product.id = :productId")
+    List<ShopToProduct> findByProductId(@Param("productId") Long productId);
 
     @Query("SELECT p FROM ShopToProduct p WHERE p.shop.id = :shopId AND p.product.id = :productId")
     ShopToProduct findOneRecord(@Param("shopId") String shopId, @Param("productId") String productId);

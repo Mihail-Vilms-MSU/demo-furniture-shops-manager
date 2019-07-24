@@ -26,8 +26,8 @@ public class PurchaseResourceAssembler extends ResourceAssemblerSupport<Purchase
 //        purchaseResource.add(linkTo(methodOn(PurchaseController.class)
 //                .getAll()).withRel("purchases"));
 
-        purchaseResource.add(linkTo(methodOn(ShopController.class)
-                .getById(purchase.getShop().getId())).withRel("shop"));
+//        purchaseResource.add(linkTo(methodOn(ShopController.class)
+//                .getById(purchase.getShop().getId())).withRel("shop"));
 
 //        purchaseResource.add(linkTo(methodOn(EmployeeController.class)
 //                .getById(purchase.getEmployee().getId())).withRel("employee"));

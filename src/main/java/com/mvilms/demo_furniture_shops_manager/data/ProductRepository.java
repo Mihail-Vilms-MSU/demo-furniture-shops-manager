@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.math.BigDecimal;
 
+// http://localhost:5001/products/search/findAll
+
 @CrossOrigin
 @RepositoryRestResource(collectionResourceRel = "products", path = "products")
 public interface ProductRepository extends JpaRepository<Product, String> {

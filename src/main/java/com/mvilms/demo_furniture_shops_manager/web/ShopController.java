@@ -1,31 +1,25 @@
 package com.mvilms.demo_furniture_shops_manager.web;
 
-import com.mvilms.demo_furniture_shops_manager.model.Product;
 import com.mvilms.demo_furniture_shops_manager.model.Shop;
 import com.mvilms.demo_furniture_shops_manager.model.ShopToProduct;
-import com.mvilms.demo_furniture_shops_manager.resources.*;
+import com.mvilms.demo_furniture_shops_manager.resources.AmountResource;
+import com.mvilms.demo_furniture_shops_manager.resources.AmountResourceAssembler;
+import com.mvilms.demo_furniture_shops_manager.resources.ShopResource;
+import com.mvilms.demo_furniture_shops_manager.resources.ShopResourceAssembler;
+import com.mvilms.demo_furniture_shops_manager.service.AmountService;
 import com.mvilms.demo_furniture_shops_manager.service.ShopService;
-
 import lombok.extern.slf4j.Slf4j;
-
 import org.json.JSONObject;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URISyntaxException;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 @Slf4j
@@ -34,23 +28,26 @@ public class ShopController {
     private final ShopService service;
     private final ShopResourceAssembler assembler;
     private final AmountResourceAssembler amountAssembler;
-    public ShopController(ShopService service, ShopResourceAssembler assembler, AmountResourceAssembler amountAssembler) {
+    private final AmountService amountService;
+
+    public ShopController(ShopService service, ShopResourceAssembler assembler, AmountResourceAssembler amountAssembler, AmountService amountService) {
         this.service = service;
         this.assembler = assembler;
         this.amountAssembler = amountAssembler;
+        this.amountService = amountService;
     }
 
+
     /**
-     * Returns shop record by its id
+     * Returns shop record by its ID
      *
-     * @param id Employee record Id
+     * @param id Employee record's Id
      * @return Employee record
      */
     @GetMapping("/shops/{id}")
     public ShopResource getById(@PathVariable String id) {
         return assembler.toResource(service.getById(id));
     }
-
 
 
     /**
@@ -76,6 +73,15 @@ public class ShopController {
         return PagedResourcesBuilder.<Shop, ShopResource>build(page, assembler);
     }
 
+
+    /**
+     *
+     * @param name
+     * @param state
+     * @param city
+     * @param pageable
+     * @return
+     */
     @GetMapping("/shops/advancedSearch")
     public Resources<ShopResource> advancedSearch(
             @RequestParam(value = "name", required = false, defaultValue = "") String name,
@@ -87,11 +93,26 @@ public class ShopController {
         return PagedResourcesBuilder.<Shop, ShopResource>build(page, assembler);
     }
 
+
+    /**
+     * Creates new shop record in database
+     *
+     * @param newShop POST Request body with new record fields values
+     * @return Saved record
+     */
     @PostMapping("/shops")
     public ShopResource addNew(@RequestBody Shop newShop) {
         return assembler.toResource(service.save(newShop));
     }
 
+
+    /**
+     *
+     * @param newShop
+     * @param id
+     * @return
+     * @throws URISyntaxException
+     */
     @PutMapping("/shops/{id}")
     public ShopResource update(@RequestBody Shop newShop, @PathVariable String id) throws URISyntaxException {
         Shop savedShop;
@@ -113,31 +134,64 @@ public class ShopController {
         return assembler.toResource(savedShop);
     }
 
-    /////////////////////////////////////////////////////////////////////
 
+    /**
+     *
+     * @return
+     */
+    @GetMapping("/shops/search-params/state")
+    List<String> getListOfStates(){
+        return service.getListOfStates();
+    }
+
+
+    /**
+     *
+     * @param state
+     * @return
+     */
+    @GetMapping("/shops/search-params/city")
+    List<String> getListOfCities(@RequestParam(value ="state", required = false, defaultValue = "") String state){
+        return service.getListOfCities(state);
+    }
+
+
+    /**
+     * Get entry that define available amount of  particular product at particular shop
+     *
+     * @param shop_id Shop record's ID
+     * @param product_id Product record's ID
+     * @return Entry with information on available amount of product
+     */
     @GetMapping("/shops/{shop_id}/products/{product_id}")
     public AmountResource getAmountOfProduct(@PathVariable String shop_id, @PathVariable String product_id) {
-        ShopToProduct amountEntry = service.getAmountOfProduct(shop_id, product_id);
+        ShopToProduct amountEntry = amountService.getAmountEntry(shop_id, product_id);
+
         return amountAssembler.toResource(amountEntry);
     }
 
+
+    /**
+     * Returns list of records that correspond to amount of every product available at shop
+     *
+     * @param shop_id Shop record's ID
+     * @return Available amount of every product in shop's storage
+     */
     @GetMapping("/shops/{shop_id}/products")
-    Resources<AmountResource> getProductsInShop(@PathVariable String shop_id, Pageable pageable) {
-        Page page = service.getAmountOfProductsForShop(shop_id, pageable);
-
-        List<AmountResource> amountResourcesList = (List) page.getContent()
-            .stream()
-            .map(amountEntry -> amountAssembler.toResource((ShopToProduct) amountEntry))
-            .collect(Collectors.toList());
-
-        PagedResources.PageMetadata pageMetadata =
-            new PagedResources.PageMetadata(page.getSize(), page.getNumber(), page.getTotalElements(), page.getTotalPages());
-
-        return new PagedResources<>(amountResourcesList, pageMetadata);
+    public List<AmountResource> getProductsInShop(@PathVariable String shop_id) {
+        return amountAssembler.listToResource(amountService.getAmountsForShop(shop_id));
     }
 
+
+    /**
+     * Method adds defined amount of several product positions to shop's storage
+     *
+     * @param stringAmountJson JSON where key serves as product id and value as
+     * @param shopId Shop record's ID
+     * @return Available amount of every product in shop's storage after fulfillment
+     */
     @PostMapping("/shops/{shopId}/products")
-    ResponseEntity<?> addAmountOfProducts(@RequestBody String stringAmountJson, @PathVariable String shopId) {
+    public List<AmountResource> addAmountOfProducts(@RequestBody String stringAmountJson, @PathVariable String shopId) {
         JSONObject amountJson = new JSONObject(stringAmountJson);
 
         Map<String, Long> productAmountMap = new HashMap<>();
@@ -145,25 +199,8 @@ public class ShopController {
             .forEach(productId -> {
                 productAmountMap.put(productId, amountJson.getLong(productId));
             });
-        service.addProducts(shopId, productAmountMap);
-        return ResponseEntity.noContent().build();
+        amountService.addProducts(shopId, productAmountMap);
+
+        return getProductsInShop(shopId);
     }
-
-    @PutMapping("/shops/{shopId}/products/{productId}")
-    ResponseEntity<?> addAmountOfProduct(@RequestBody Long amount, @PathVariable String shopId, @PathVariable String productId) {
-        service.addAmountOfProduct(shopId, productId, amount);
-        return ResponseEntity.noContent().build();
-    }
-
-
-    @GetMapping("/shops/search-params/state")
-    List<String> getListOfStates(){
-        return service.getListOfStates();
-    }
-
-    @GetMapping("/shops/search-params/city")
-    List<String> getListOfCities(@RequestParam(value ="state", required = false, defaultValue = "") String state){
-        return service.getListOfCities(state);
-    }
-
 }
