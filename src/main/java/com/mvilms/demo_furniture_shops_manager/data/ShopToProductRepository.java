@@ -22,7 +22,7 @@ public interface ShopToProductRepository extends JpaRepository<ShopToProduct, Lo
     List<ShopToProduct> findByShopId(@Param("shopId") String shopId);
 
     @Query("SELECT p FROM ShopToProduct p WHERE p.product.id = :productId")
-    List<ShopToProduct> findByProductId(@Param("productId") Long productId);
+    List<ShopToProduct> findByProductId(@Param("productId") String productId);
 
     @Query("SELECT p FROM ShopToProduct p WHERE p.shop.id = :shopId AND p.product.id = :productId")
     ShopToProduct findOneRecord(@Param("shopId") String shopId, @Param("productId") String productId);

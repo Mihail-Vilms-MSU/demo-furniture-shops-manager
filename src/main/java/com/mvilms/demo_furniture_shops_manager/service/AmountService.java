@@ -50,7 +50,7 @@ public class AmountService {
      * @return Records that define amount of product at every shops
      */
     public List<ShopToProduct> getAmountsOfProduct(String productId){
-        return repository.findByShopId(productId);
+        return repository.findByProductId(productId);
     }
 
 

@@ -6,6 +6,7 @@ import com.mvilms.demo_furniture_shops_manager.resources.EmployeeResourceAssembl
 import com.mvilms.demo_furniture_shops_manager.service.EmployeeService;
 import com.mvilms.demo_furniture_shops_manager.service.ShopService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.PagedResources;
@@ -18,15 +19,16 @@ import java.util.stream.Collectors;
 @Slf4j
 @CrossOrigin
 public class EmployeeController {
-    private final EmployeeService service;
-    private final ShopService shopService;
-    private final EmployeeResourceAssembler assembler;
 
-    public EmployeeController(EmployeeService service, ShopService shopService) {
-        this.service = service;
-        this.assembler = new EmployeeResourceAssembler();
-        this.shopService = shopService;
-    }
+    @Autowired
+    private EmployeeService service;
+
+    @Autowired
+    private ShopService shopService;
+
+    @Autowired
+    private EmployeeResourceAssembler assembler;
+
 
     /**
      * Returns employee record

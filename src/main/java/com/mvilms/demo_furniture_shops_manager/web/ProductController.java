@@ -8,7 +8,9 @@ import com.mvilms.demo_furniture_shops_manager.resources.ProductResource;
 import com.mvilms.demo_furniture_shops_manager.resources.ProductResourceAssembler;
 import com.mvilms.demo_furniture_shops_manager.service.AmountService;
 import com.mvilms.demo_furniture_shops_manager.service.ProductService;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -164,11 +166,11 @@ public class ProductController {
     /**
      * Returns list of records that correspond to amount of every product available at shop
      *
-     * @param shop_id Shop record's ID
+     * @param product_id Shop record's ID
      * @return Available amount of every product in shop's storage
      */
-    @GetMapping("/shops/{shop_id}/products")
-    public List<AmountResource> getProductsInShop(@PathVariable String shop_id) {
-        return amountAssembler.listToResource(amountService.getAmountsForShop(shop_id));
+    @GetMapping("/products/{product_id}/shops")
+    public List<AmountResource> getProductsInShop(@PathVariable String product_id) {
+        return amountAssembler.listToResource(amountService.getAmountsOfProduct(product_id));
     }
 }
