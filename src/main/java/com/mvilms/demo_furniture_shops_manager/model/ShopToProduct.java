@@ -30,5 +30,4 @@ public class ShopToProduct{
         this.product = product;
         this.amount = amount;
     }
-
 }

@@ -3,6 +3,7 @@ package com.mvilms.demo_furniture_shops_manager.service;
 import com.mvilms.demo_furniture_shops_manager.data.ProductRepository;
 import com.mvilms.demo_furniture_shops_manager.model.Product;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,13 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 // #READ https://www.baeldung.com/spring-boot-testing
 
 @RunWith(SpringRunner.class)
 public class ProductServiceTest {
+
     @TestConfiguration
     static class ProductServiceTestContextConfiguration {
         @Bean
@@ -35,6 +39,7 @@ public class ProductServiceTest {
     @MockBean
     ProductRepository productRepository;
 
+
     @Before
     public void setUp_forFindByName() {
         List<Product> productsListByName = new ArrayList<>();
@@ -44,6 +49,7 @@ public class ProductServiceTest {
         Mockito.when(productRepository.findByName("Sofa", PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(productsListByName));
     }
+
 
     @Before
     public void setUp_forFindByType() {
@@ -57,11 +63,13 @@ public class ProductServiceTest {
 
     }
 
+
 //    @Test
 //    public void findByName_returns2Records(){
 //        assertThat(productService.findByName("Sofa", PageRequest.of(0, 10)).getContent().size()).isEqualTo(2);
 //    }
-//
+
+
 //    @Test
 //    public void findByName_returns3Records(){
 //        List<Product> productsList = productService.findByType("Chair", PageRequest.of(0, 10)).getContent();

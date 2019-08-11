@@ -1,10 +1,16 @@
 package com.mvilms.demo_furniture_shops_manager.web;
 
 import com.mvilms.demo_furniture_shops_manager.model.Product;
+import com.mvilms.demo_furniture_shops_manager.model.ShopToProduct;
+import com.mvilms.demo_furniture_shops_manager.resources.AmountResource;
+import com.mvilms.demo_furniture_shops_manager.resources.AmountResourceAssembler;
 import com.mvilms.demo_furniture_shops_manager.resources.ProductResource;
 import com.mvilms.demo_furniture_shops_manager.resources.ProductResourceAssembler;
+import com.mvilms.demo_furniture_shops_manager.service.AmountService;
 import com.mvilms.demo_furniture_shops_manager.service.ProductService;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -22,12 +29,16 @@ public class ProductController {
     private ProductService service;
     @Autowired
     private ProductResourceAssembler assembler;
+    @Autowired
+    private AmountService amountService;
+    @Autowired
+    private AmountResourceAssembler amountAssembler;
 
 
     /**
      * Returns product record
      *
-     * @param id Product records Id
+     * @param id Product record's Id
      * @return Product record
      */
     @GetMapping("/products/{id}")
@@ -125,6 +136,7 @@ public class ProductController {
         return assembler.toResource(savedProduct);
     }
 
+
     /**
      * Deletes one record from database by id
      * @param id Id of record we need to delete
@@ -133,5 +145,32 @@ public class ProductController {
     ResponseEntity<?> delete(@PathVariable String id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+
+    /**
+     * Get entry that define available amount of  particular product at particular shop
+     *
+     * @param product_id Product record's ID
+     * @param shop_id Shop record's ID
+     * @return Entry with information on available amount of product
+     */
+    @GetMapping("/products/{product_id}/shops/{shop_id}")
+    public AmountResource getAmountOfProduct(@PathVariable String product_id, @PathVariable String shop_id) {
+        ShopToProduct amountEntry = amountService.getAmountEntry(shop_id, product_id);
+
+        return amountAssembler.toResource(amountEntry);
+    }
+
+
+    /**
+     * Returns list of records that correspond to amount of every product available at shop
+     *
+     * @param product_id Shop record's ID
+     * @return Available amount of every product in shop's storage
+     */
+    @GetMapping("/products/{product_id}/shops")
+    public List<AmountResource> getProductsInShop(@PathVariable String product_id) {
+        return amountAssembler.listToResource(amountService.getAmountsOfProduct(product_id));
     }
 }

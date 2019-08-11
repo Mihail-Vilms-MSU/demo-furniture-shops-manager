@@ -16,7 +16,16 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
 
-/* #READ https://www.baeldung.com/spring-boot-testing */
+//  #READ https://www.baeldung.com/spring-boot-testing
+//
+//  @DataJpaTest provides some standard setup needed for testing the persistence layer:
+//      - configuring H2, an in-memory database
+//      - setting Hibernate, Spring Data, and the DataSource
+//      - performing an @EntityScan turning on SQL logging
+//
+// The TestEntityManager provided by Spring Boot is an alternative to the standard JPA EntityManager
+// that provides methods commonly used when writing tests
+
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -77,7 +86,7 @@ public class ProductsRepositoryTest {
     }
 
     @Test
-    public void findByPrice_dbHasWithPriceBetween120And250returns3Records() {
+    public void findByPrice_dbHasWithPriceBetween120And350returns3Records() {
         Pageable pageable = PageRequest.of(0, 10);
         Page<Product> productPage = productRepository.findByPrice(new BigDecimal(120), new BigDecimal(350), pageable);
         Assert.assertEquals(3, productPage.getContent().size());
